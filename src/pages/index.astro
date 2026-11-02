@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import Expert from '../components/Expert.astro';
+import Calculator from '../components/Calculator.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+import Cases from '../components/Cases.astro';
+import PriceCards from '../components/PriceCards.astro';
+import Faq from '../components/Faq.astro';
+import Cities from '../components/Cities.astro';
+import { services } from '../data/site';
+import { faqHome } from '../data/faq';
+const more = services.filter((s) => !['/bankrotstvo-fizlic/', '/bankrotstvo-cherez-mfc/'].includes(s.href));
+---
+<Base
+  title="Банкротство физических лиц в Сергиевом Посаде — бесплатный разбор | Правовая перспектива"
+  description="Честно скажем, нужно ли вам банкротство: через МФЦ бесплатно или через суд. Цена от 100 000 ₽, рассрочка до 10 месяцев. Можно анонимно. Сергиев Посад и Московская область."
+  faq={faqHome}
+>
+  <section class="wrap" style="padding:56px 24px">
+    <div class="split" style="align-items:center">
+      <div class="main stack">
+        <span class="kicker">Банкротство физлиц и ИП · Сергиев Посад и Московская область</span>
+        <h1>Сначала честно скажем, нужно ли вам банкротство</h1>
+        <p class="lead">Если подходит бесплатный путь через МФЦ — так и скажем. Если нужен суд — ведём дело сами, цена фиксируется в договоре.</p>
+        <ul class="checklist checklist--col">
+          <li>Дело ведёт руководитель компании лично</li>
+          <li>Мы ничего о вас не раскрываем</li>
+          <li>От 100 000 ₽, рассрочка до 10 месяцев</li>
+        </ul>
+        <div class="row" style="margin-top:8px">
+          <a href="#calc" class="btn btn--accent">Рассчитать стоимость самостоятельно</a>
+          <a href="#svyaz" class="btn btn--outline">Задать вопрос анонимно</a>
+        </div>
+      </div>
+      <div class="side"><Expert /></div>
+    </div>
+  </section>
+
+  <section id="uslugi" class="section section--white" aria-labelledby="puti">
+    <div class="wrap stack" style="--gap:28px">
+      <h2 id="puti">Два законных пути — подскажем, какой ваш</h2>
+      <div class="grid" style="--min:300px;--gap:24px">
+        <div class="card card--cream" style="padding:28px">
+          <span class="kicker" style="font-size:15px">Бесплатно, без суда</span>
+          <h3 style="font-size:24px">Внесудебное банкротство через МФЦ</h3>
+          <p>Для долгов от 25 000 до 1 000 000 ₽, если выполняется одно из условий закона — например, приставы окончили взыскание, потому что взыскать нечего. Процедура длится 6 месяцев. Важно: списываются только долги, которые вы указали в заявлении и которые подходят под списание через МФЦ, поэтому список кредиторов нужно составить без ошибок.</p>
+          <a href="/bankrotstvo-cherez-mfc/" class="more">Проверить, подходит ли вам МФЦ →</a>
+        </div>
+        <div class="card card--cream" style="padding:28px">
+          <span class="kicker" style="font-size:15px">Через Арбитражный суд Московской области</span>
+          <h3 style="font-size:24px">Судебное банкротство под ключ</h3>
+          <p>Обычно при долге от 500 000 ₽ или когда МФЦ не подходит. Через суд можно освободиться от всех долгов, кроме тех, что закон списать не позволяет. Собираем документы, подаём заявление и ведём дело до завершения.</p>
+          <a href="/bankrotstvo-fizlic/" class="more">Как проходит судебное банкротство →</a>
+        </div>
+      </div>
+      <div class="stack" style="--gap:12px">
+        <h3>Ещё помогаем</h3>
+        <div class="chips" style="grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))">
+          {more.map((s) => <a class="chip" style="border-radius:14px" href={s.href}>{s.label}</a>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Calculator />
+  <ContactOptions />
+
+  <section class="section" aria-labelledby="etapy">
+    <div class="wrap stack" style="--gap:28px">
+      <h2 id="etapy">Как мы работаем</h2>
+      <ol class="steps">
+        <li><span class="num">1</span><strong>Бесплатный разбор</strong><span class="d">Вы рассказываете, какие долги и что есть из имущества. Мы честно говорим, подходит ли банкротство, какое и чем рискуете.</span></li>
+        <li><span class="num">2</span><strong>Договор</strong><span class="d">Фиксируем цену и график рассрочки. Без скрытых доплат — обязательные расходы по закону называем сразу.</span></li>
+        <li><span class="num">3</span><strong>Документы</strong><span class="d">Большую часть справок запрашиваем сами. Что нужно от вас — пришлём списком.</span></li>
+        <li><span class="num">4</span><strong>Суд</strong><span class="d">Подаём заявление и представляем вас на заседаниях по нотариальной доверенности. Ходить в суд вам не нужно.</span></li>
+        <li><span class="num">5</span><strong>Завершение</strong><span class="d">Работаем с финансовым управляющим и кредиторами до итогового решения суда. Всё время держим вас в курсе.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="o-nas" class="section section--petrol" aria-labelledby="tajna">
+    <div class="wrap split" style="align-items:center;gap:32px">
+      <div class="main stack" style="--gap:14px;flex-basis:480px">
+        <h2 id="tajna" style="font-size:clamp(28px,3.2vw,36px)">Мы ничего о вас не раскрываем</h2>
+        <p style="color:var(--on-petrol);font-size:19px">Не звоним родственникам и на работу, не публикуем имён в кейсах и отзывах без вашего согласия. Обсудить ситуацию можно анонимно — имя понадобится, только когда вы решите заключить договор. Данные с сайта хранятся на серверах в России.</p>
+      </div>
+      <ul class="side stack" style="--gap:12px;list-style:none;margin:0;padding:0;font-size:17px">
+        <li class="dark-card">Можно задать вопрос без имени</li>
+        <li class="dark-card">Вы сами выбираете, как и когда говорить</li>
+        <li class="dark-card">Данные хранятся на серверах в России</li>
+      </ul>
+    </div>
+  </section>
+
+  <Cases ids={[1, 2, 7]} />
+  <p class="wrap" style="margin-top:-40px;padding-bottom:40px"><a href="/kejsy/" style="font-weight:600">Все дела из практики →</a></p>
+  <PriceCards />
+  <Faq items={faqHome} />
+  <Cities />
+</Base>

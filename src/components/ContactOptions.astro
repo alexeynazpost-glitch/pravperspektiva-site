@@ -1,0 +1,37 @@
+---
+import { site, messengerHref } from '../data/site';
+import CallbackForm from './CallbackForm.astro';
+interface Props { title?: string; sub?: string }
+const { title = 'Как связаться — выбирайте сами', sub = 'Можно анонимно, без имени. Звоним, только если вы сами попросили.' } = Astro.props;
+---
+<section id="svyaz" class="section section--tint" aria-labelledby="svyaz-h">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="svyaz-h">{title}</h2>
+      <p class="muted">{sub}</p>
+    </div>
+    <div class="grid" style="--min:250px">
+      <div class="card" style="border:0">
+        <h3>Напишите в мессенджер</h3>
+        <p class="small">Прочитаете ответ, когда удобно. Отвечать сразу не нужно.</p>
+        <div class="row" style="--gap:8px;margin-top:auto">
+          {site.messengers.map((m) => (
+            <a href={messengerHref(m)} class={'btn btn--sm ' + (m.primary ? 'btn--petrol' : 'btn--outline')}>{m.name}</a>
+          ))}
+        </div>
+      </div>
+      <div class="card" style="border:0">
+        <h3>Позвоните сами</h3>
+        <p class="small">Ответит {site.expert}. {site.hours}.</p>
+        <a href={site.phoneHref} style="margin-top:auto;font-size:24px;font-weight:700;color:var(--petrol-dark);text-decoration:none;padding:6px 0;white-space:nowrap">{site.phone}</a>
+      </div>
+      <div class="card" style="border:0">
+        <h3>Запишитесь на удобное время</h3>
+        <p class="small">Выберите день, время и формат: офис, звонок или переписка. Мы свяжемся ровно тогда.</p>
+        <a href="/kontakty/#zapis" class="btn btn--accent btn--sm" style="margin-top:auto">Выбрать время</a>
+      </div>
+      <CallbackForm idp="cb-svyaz" />
+    </div>
+  </div>
+</section>
+<style>#svyaz form.card{border:0}</style>

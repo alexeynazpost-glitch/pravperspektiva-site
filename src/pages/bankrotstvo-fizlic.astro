@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import PriceTable from '../components/PriceTable.astro';
+import Cases from '../components/Cases.astro';
+import Faq from '../components/Faq.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+import { faqCourt } from '../data/faq';
+const work = [
+  'Анализ долгов, имущества и сделок за последние 3 года — именно их проверяет финансовый управляющий',
+  'Сбор документов и справок',
+  'Заявление в Арбитражный суд Московской области',
+  'Подбор финансового управляющего',
+  'Участие в судебных заседаниях вместо вас — по нотариальной доверенности',
+  'Сохранение прожиточного минимума и защита имущества',
+  'Работа по сохранению ипотечного жилья — когда закон и ситуация это позволяют',
+  'Ответы кредиторам и коллекторам',
+  'Постоянная связь с финансовым управляющим — берём на себя',
+  'Сопровождение до итогового решения суда',
+];
+---
+<Base
+  title="Судебное банкротство физических лиц под ключ — от 100 000 ₽ | Правовая перспектива"
+  description="Ведём банкротство в Арбитражном суде Московской области от консультации до итогового решения. Ходить в суд не нужно. Цена в договоре, рассрочка до 10 месяцев."
+  crumbs={[{ href: '/#uslugi', label: 'Услуги' }, { label: 'Судебное банкротство' }]}
+  faq={faqCourt}
+  schema={[{ '@context': 'https://schema.org', '@type': 'Service', name: 'Судебное банкротство физических лиц', provider: { '@id': 'https://pravperspektiva.ru/#org' }, areaServed: 'Московская область', offers: { '@type': 'Offer', price: '100000', priceCurrency: 'RUB', description: 'Стоимость услуг — от 100 000 ₽, рассрочка до 10 месяцев' } }]}
+>
+  <Hero
+    h1="Судебное банкротство физических лиц под ключ"
+    lead="Ведём дело в Арбитражном суде Московской области от первой консультации до итогового решения. Сначала честно оцениваем, нужен ли вам суд — или подойдёт бесплатный путь через МФЦ."
+    asideLabel="Стоимость наших услуг"
+    asidePrice="от 100 000 ₽"
+    asideText="Рассрочка до 10 месяцев. Цена фиксируется в договоре."
+    asideLink={{ href: '#stoimost', label: 'Из чего складывается цена →' }}
+  />
+
+  <section class="section" style="padding-top:16px" aria-labelledby="komu">
+    <div class="wrap stack" style="--gap:20px">
+      <h2 id="komu">Кому подходит</h2>
+      <div class="grid" style="--min:260px;--gap:16px">
+        <div class="card">Долги больше, чем вы можете выплатить, и платежи уже просрочены.</div>
+        <div class="card">Долг от 500 000 ₽. При долге больше 1 млн ₽ МФЦ уже не подходит.</div>
+        <div class="card">Не выполняется ни одно из условий для МФЦ — например, есть имущество или доход, из которого идёт взыскание.</div>
+        <div class="card">Звонят коллекторы, арестованы счета, удерживают зарплату.</div>
+      </div>
+      <p class="muted small">При долге больше 500 000 ₽ и невозможности платить закон обязывает гражданина обратиться в суд (п. 1 ст. 213.4 закона № 127-ФЗ). При меньшем долге это право, если вы понимаете, что не сможете рассчитаться (п. 2 той же статьи). На практике через суд обычно идут при долге от 500 000 ₽, в отдельных случаях — от 300 000 ₽.</p>
+      <p class="callout"><strong>Суд или МФЦ — в чём разница.</strong> Через суд можно освободиться от всех долгов, кроме тех, что закон списать не позволяет (например, алименты). Через МФЦ — только от долгов, которые указаны в заявлении. Подать его можно только при условиях закона — например, если приставы окончили взыскание, потому что взыскать нечего. Алименты, возмещение вреда здоровью и другие долги, которые закон не списывает, через МФЦ тоже не списываются. <a href="/bankrotstvo-cherez-mfc/">Подробнее о МФЦ</a></p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-labelledby="vhodit">
+    <div class="wrap">
+      <div class="card card--big" style="gap:20px">
+        <h2 id="vhodit">Что входит в работу</h2>
+        <ul class="checklist">{work.map((w) => <li>{w}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-labelledby="etapy-s">
+    <div class="wrap stack" style="--gap:20px">
+      <h2 id="etapy-s">Как проходит процедура</h2>
+      <ol class="steps-list">
+        <li><span class="num">1</span><div><strong>Разбор и договор.</strong> <span class="t">Бесплатно оцениваем ситуацию, фиксируем цену и рассрочку.</span></div></li>
+        <li><span class="num">2</span><div><strong>Документы и заявление.</strong> <span class="t">Готовим пакет документов, вносим на депозит суда вознаграждение управляющего и подаём заявление.</span></div></li>
+        <li><span class="num">3</span><div><strong>Признание банкротом.</strong> <span class="t">Суд проверяет заявление и вводит процедуру — реструктуризацию долгов или реализацию имущества. С этого момента прекращаются начисление пеней и взыскания приставов по старым долгам.</span></div></li>
+        <li><span class="num">4</span><div><strong>Работа финансового управляющего.</strong> <span class="t">Он собирает требования кредиторов и проверяет имущество. Мы контролируем каждый шаг и отвечаем на возражения кредиторов.</span></div></li>
+        <li><span class="num">5</span><div><strong>Завершение.</strong> <span class="t">Суд рассматривает отчёт управляющего и выносит итоговое определение. Мы участвуем в заседании и отстаиваем вашу позицию.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <PriceTable />
+  <Cases ids={[1, 2, 5]} bg="white" />
+  <Faq items={faqCourt} title="Вопросы о судебном банкротстве" />
+
+  <section class="section" style="padding-top:0" aria-labelledby="poleznoe">
+    <div class="wrap stack" style="--gap:16px">
+      <h2 id="poleznoe" style="font-size:28px">Полезно знать</h2>
+      <div class="grid" style="--min:260px;--gap:16px">
+        <a class="card" href="/blog/posledstviya/" style="text-decoration:none;color:var(--text);font-weight:600">Можно ли взять кредит после банкротства</a>
+        <a class="card" href="/blog/procedura/" style="text-decoration:none;color:var(--text);font-weight:600">Сколько длится банкротство и от чего это зависит</a>
+        <a class="card" href="/blog/procedura/" style="text-decoration:none;color:var(--text);font-weight:600">Какие документы нужны для банкротства</a>
+      </div>
+    </div>
+  </section>
+
+  <ContactOptions />
+</Base>

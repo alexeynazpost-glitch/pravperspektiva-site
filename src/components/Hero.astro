@@ -1,0 +1,33 @@
+---
+// Первый экран внутренних страниц: заголовок, лид, кнопки и карточка справа (необязательно)
+interface Btn { href: string; label: string; kind?: 'accent' | 'outline' }
+interface Props { h1: string; lead?: string; buttons?: Btn[]; asideLabel?: string; asidePrice?: string; asideText?: string; asideLink?: { href: string; label: string } }
+const { h1, lead, buttons = [
+  { href: '/#calc', label: 'Рассчитать стоимость', kind: 'accent' },
+  { href: '/kontakty/#zapis', label: 'Записаться на бесплатный разбор', kind: 'outline' },
+], asideLabel, asidePrice, asideText, asideLink } = Astro.props;
+const hasAside = asidePrice || asideText || Astro.slots.has('aside');
+---
+<section class="wrap" style="padding-bottom:40px">
+  <div class="split">
+    <div class="main stack" style="--gap:20px">
+      <h1>{h1}</h1>
+      {lead && <p class="lead" set:html={lead} />}
+      <slot />
+      {buttons.length > 0 && (
+        <div class="row">
+          {buttons.map((b) => <a href={b.href} class={'btn ' + (b.kind === 'outline' ? 'btn--outline' : 'btn--accent')}>{b.label}</a>)}
+        </div>
+      )}
+    </div>
+    {hasAside && (
+      <aside class="side card">
+        {asideLabel && <span class="note">{asideLabel}</span>}
+        {asidePrice && <span class="price-badge">{asidePrice}</span>}
+        {asideText && <span class="small muted" set:html={asideText} />}
+        <slot name="aside" />
+        {asideLink && <a href={asideLink.href} style="font-weight:600;padding:8px 0">{asideLink.label}</a>}
+      </aside>
+    )}
+  </div>
+</section>

@@ -1,0 +1,21 @@
+---
+import { prices, mandatoryCosts } from '../data/site';
+interface Props { title?: string; id?: string; link?: boolean }
+const { title = 'Стоимость судебного банкротства', id = 'ceny', link = true } = Astro.props;
+---
+<section id={id} class="section section--white" aria-labelledby={id + '-h'}>
+  <div class="wrap stack">
+    <h2 id={id + '-h'}>{title}</h2>
+    <div class="grid" style="--min:240px;--gap:16px">
+      {prices.map((p) => (
+        <div class={'card card--cream price-card' + (p.accent ? ' card--accent' : '')}>
+          <span class="cond">{p.cond}</span>
+          <strong>{p.price}</strong>
+          <span class="note">{p.note}</span>
+        </div>
+      ))}
+    </div>
+    <p class="muted small">{mandatoryCosts}</p>
+    {link && <div class="row"><a href="#calc" class="btn btn--accent">Рассчитать для моей ситуации</a><a href="/ceny/" class="btn btn--outline">Все цены</a></div>}
+  </div>
+</section>

@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Cases from '../components/Cases.astro';
+import Faq from '../components/Faq.astro';
+import Cities from '../components/Cities.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+import { cities, type City } from '../data/cities';
+
+export function getStaticPaths() {
+  return cities.map((c) => ({ params: { city: c.slug }, props: { c } }));
+}
+const { c } = Astro.props as { c: City };
+---
+<Base
+  title={c.title}
+  description={c.description}
+  crumbs={[{ label: `Банкротство ${c.dat}` }]}
+  faq={c.faq}
+>
+  <Hero h1={c.h1} lead={c.lead} buttons={[{ href: '/#calc', label: 'Рассчитать стоимость', kind: 'accent' }, { href: '/kontakty/#zapis', label: 'Записаться на разбор', kind: 'outline' }]} />
+
+  <section class="section" style="padding-top:16px" aria-labelledby="kak">
+    <div class="wrap stack" style="--gap:20px">
+      <h2 id="kak">Как мы работаем с жителями {c.of}</h2>
+      <div class="grid" style="--min:250px">
+        <div class="card"><h3>Консультация</h3><p>По телефону или в переписке — бесплатно и можно без имени. Если удобнее лично — приезжайте в офис в Сергиевом Посаде.</p></div>
+        <div class="card"><h3>Документы и договор</h3><p>Большую часть справок запрашиваем сами, что нужно от вас — пришлём списком. Договор — по электронной или обычной почте.</p></div>
+        <div class="card"><h3>Суд</h3><p>Дела всех жителей Подмосковья рассматривает Арбитражный суд Московской области. Заявление подаётся по месту жительства. В суде представляем вас по нотариальной доверенности.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-labelledby="mfc">
+    <div class="wrap">
+      <div class="card card--big" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:24px">
+        <div class="stack" style="--gap:10px;flex:999 1 480px;min-width:0">
+          <h2 id="mfc" style="font-size:28px">Банкротство через МФЦ {c.dat}</h2>
+          <p>Если долг от 25 000 до 1 000 000 ₽ и выполняется одно из условий закона, заявление можно бесплатно подать в МФЦ по месту жительства или пребывания. Проверим, подходит ли вам этот путь, и поможем без ошибок составить список кредиторов. Адреса и часы работы филиалов — на официальном сайте МФЦ Московской области.</p>
+        </div>
+        <a href="/bankrotstvo-cherez-mfc/" class="btn btn--outline" style="flex:none">Подходит ли мне МФЦ</a>
+      </div>
+    </div>
+  </section>
+
+  <Cases
+    ids={c.cases}
+    title="Дела наших клиентов из Подмосковья"
+    sub="Дела всех жителей Московской области рассматривает один суд — Арбитражный суд Московской области."
+    showCity={c.caseCity ?? '—'}
+    bg="white"
+  />
+
+  <section class="section" aria-labelledby="ceny-c">
+    <div class="wrap">
+      <div class="band">
+        <div>
+          <h2 id="ceny-c" style="font-size:28px">Стоимость для жителей {c.of}</h2>
+          <p>Стоимость не зависит от города: судебное банкротство от 100 000 ₽, помощь с МФЦ — 50 000 ₽, рассрочка до 10 месяцев. Большую часть работы ведём дистанционно.</p>
+        </div>
+        <a href="/ceny/" class="btn btn--white" style="flex:none">Все цены</a>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={c.faq} />
+  <ContactOptions />
+  <div style="padding-top:64px"><Cities title="Также работаем" text="" exclude={c.slug} withHome /></div>
+</Base>

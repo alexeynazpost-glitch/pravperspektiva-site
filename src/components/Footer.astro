@@ -1,0 +1,49 @@
+---
+import { site, services, cityLinks } from '../data/site';
+const footServices = services.filter((s) =>
+  ['/bankrotstvo-fizlic/', '/bankrotstvo-cherez-mfc/', '/bankrotstvo-ip/', '/bankrotstvo-s-ipotekoj/', '/zashchita-ot-kollektorov/', '/konsultaciya/'].includes(s.href)
+);
+---
+<footer class="site-footer">
+  <div class="in">
+    <div class="cols">
+      <div class="col">
+        <span class="h" style="font-size:18px">{site.name}</span>
+        <span style="color:#B9CACC">Банкротство физических лиц и ИП в Сергиевом Посаде, Московской области и дистанционно по России</span>
+        <a href={site.phoneHref} style="color:#fff;font-weight:600">{site.phone}</a>
+        <span style="color:#B9CACC">{site.addressShort}</span>
+        <span style="color:#B9CACC">На связи {site.hours.toLowerCase()}</span>
+      </div>
+      <nav class="col" aria-label="Услуги">
+        <span class="h">Услуги</span>
+        {footServices.map((s) => <a href={s.href}>{s.label}</a>)}
+        <a href="/#uslugi">Все услуги</a>
+      </nav>
+      <nav class="col" aria-label="Города">
+        <span class="h">Где работаем</span>
+        <a href="/">Сергиев Посад</a>
+        {cityLinks.map((c) => <a href={`/${c.slug}/`}>{c.label}</a>)}
+        <a href="/distancionno/">Дистанционно по России</a>
+      </nav>
+      <nav class="col" aria-label="Компания">
+        <span class="h">Компания</span>
+        <a href="/o-kompanii/">О нас</a>
+        <a href="/kejsy/">Кейсы</a>
+        <a href="/ceny/">Цены</a>
+        <a href="/voprosy/">Вопросы и ответы</a>
+        <a href="/blog/">Блог</a>
+        <a href="/kontakty/">Контакты</a>
+      </nav>
+    </div>
+    <div class="legal">
+      <p class="disc">{site.disclaimer}</p>
+      <p>Мы ничего о клиентах не раскрываем. Сведения о самой процедуре банкротства раскрывает суд и публикует Единый федеральный реестр сведений о банкротстве (ЕФРСБ) — так требует закон.</p>
+      <p>{site.requisites}</p>
+      <p style="display:flex;flex-wrap:wrap;gap:8px 24px">
+        <a href="/politika/" style="text-decoration:underline">Политика конфиденциальности</a>
+        <a href="/soglasie/" style="text-decoration:underline">Согласие на обработку персональных данных</a>
+        <span>Информация на сайте не является публичной офертой</span>
+      </p>
+    </div>
+  </div>
+</footer>

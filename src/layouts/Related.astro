@@ -1,0 +1,25 @@
+---
+// Каркас страниц сопутствующих услуг (волна 4)
+import Base from './Base.astro';
+import Hero from '../components/Hero.astro';
+import Faq from '../components/Faq.astro';
+import Cases from '../components/Cases.astro';
+import PathsLinks from '../components/PathsLinks.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+interface Props { title: string; description: string; crumb: string; h1: string; lead: string; faq?: { q: string; a: string }[]; cases?: number[] }
+const { title, description, crumb, h1, lead, faq = [], cases = [] } = Astro.props;
+---
+<Base title={title} description={description} crumbs={[{ href: '/#uslugi', label: 'Услуги' }, { label: crumb }]} faq={faq}>
+  <Hero
+    h1={h1}
+    lead={lead}
+    buttons={[{ href: '/kontakty/#zapis', label: 'Записаться на бесплатный разбор', kind: 'accent' }, { href: '#svyaz', label: 'Задать вопрос анонимно', kind: 'outline' }]}
+    asideLabel="Стоимость"
+    asideText="Стоимость зависит от объёма работы — назовём её после бесплатного разбора и зафиксируем в договоре."
+  />
+  <slot />
+  {cases.length > 0 && <Cases ids={cases} bg="white" />}
+  {faq.length > 0 && <Faq items={faq} />}
+  <PathsLinks />
+  <ContactOptions />
+</Base>

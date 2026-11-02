@@ -1,0 +1,19 @@
+---
+import { site } from '../data/site';
+interface Props { title?: string; tag?: 'h2' | 'h3'; idp?: string }
+const { title = 'Мы перезвоним', tag = 'h3', idp = 'cb' } = Astro.props;
+const H = tag;
+---
+<form class="card" data-lead="callback" data-ok={`Спасибо! Перезвоним в удобное время с номера ${site.phone}.`} novalidate aria-label="Обратный звонок">
+  <H style="font-size:21px;margin:0">{title}</H>
+  <p class="small">Оставьте номер — перезвоним в удобное время с номера {site.phone}.</p>
+  <label class="field" for={idp + '-phone'}>Ваш телефон
+    <input id={idp + '-phone'} type="tel" name="contact" placeholder="+7" autocomplete="tel" inputmode="tel" />
+  </label>
+  <label class="field" for={idp + '-when'}>Когда удобно
+    <select id={idp + '-when'} name="when"><option>Как можно скорее</option><option>Утром</option><option>Днём</option><option>Вечером</option></select>
+  </label>
+  <label class="consent"><input type="checkbox" name="consent" /><span>Даю <a href="/soglasie/" target="_blank">согласие на обработку персональных данных</a></span></label>
+  <button type="submit" class="btn btn--petrol" style="margin-top:auto">Перезвоните мне</button>
+  <p class="form-msg" role="status" hidden></p>
+</form>

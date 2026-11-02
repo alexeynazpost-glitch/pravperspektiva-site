@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+import { faqHome, faqCourt, faqMfc, faqConsult, faqIp } from '../data/faq';
+const seen = new Set<string>();
+const uniq = (list: { q: string; a: string }[]) => list.filter((f) => (seen.has(f.q) ? false : (seen.add(f.q), true)));
+const groups = [
+  { id: 'obshchie', title: 'Общие вопросы', items: uniq(faqHome) },
+  { id: 'sud', title: 'Судебное банкротство', items: uniq(faqCourt) },
+  { id: 'mfc', title: 'Банкротство через МФЦ', items: uniq(faqMfc) },
+  { id: 'ip', title: 'Банкротство ИП', items: uniq(faqIp) },
+  { id: 'konsultaciya', title: 'Консультация', items: uniq(faqConsult) },
+];
+const all = groups.flatMap((g) => g.items);
+---
+<Base
+  title="Вопросы и ответы о банкротстве физических лиц | Правовая перспектива"
+  description="Заберут ли квартиру, что будет с картой и зарплатой, какие долги не списываются, сколько длится банкротство и какие последствия — простыми словами со ссылками на закон."
+  crumbs={[{ label: 'Вопросы и ответы' }]}
+  faq={all}
+>
+  <section class="wrap stack" style="--gap:16px">
+    <h1>Вопросы и ответы о банкротстве</h1>
+    <p class="lead">Отвечаем простыми словами и со ссылками на закон. Не нашли свой вопрос — задайте его анонимно.</p>
+    <nav class="row" aria-label="Разделы" style="--gap:8px">
+      {groups.map((g) => <a class="chip" style="min-height:44px" href={'#' + g.id}>{g.title}</a>)}
+    </nav>
+  </section>
+  {groups.map((g) => <Faq items={g.items} title={g.title} id={g.id} />)}
+  <ContactOptions title="Остался вопрос? Спросите анонимно" />
+</Base>

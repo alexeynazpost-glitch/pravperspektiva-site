@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Faq from '../components/Faq.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+import { faqConsult } from '../data/faq';
+import { site, messengerHref } from '../data/site';
+---
+<Base
+  title="Бесплатная консультация по банкротству — можно анонимно | Правовая перспектива"
+  description="Разберём вашу ситуацию и честно скажем, нужно ли банкротство, какое и сколько оно стоит. В офисе в Сергиевом Посаде, по телефону или в переписке. Можно без имени."
+  crumbs={[{ href: '/#uslugi', label: 'Услуги' }, { label: 'Бесплатная консультация' }]}
+  faq={faqConsult}
+>
+  <Hero
+    h1="Бесплатный разбор вашей ситуации с долгами"
+    lead="Расскажите, какие у вас долги и что есть из имущества. Мы честно скажем, нужно ли вам банкротство, какое и что вы рискуете. Ни к чему не обязывает: решение принимаете вы."
+    buttons={[{ href: '/kontakty/#zapis', label: 'Выбрать время', kind: 'accent' }, { href: messengerHref(site.messengers[0]), label: 'Написать в MAX', kind: 'outline' }]}
+  />
+
+  <section class="section" style="padding-top:16px" aria-labelledby="uznaete">
+    <div class="wrap">
+      <div class="card card--big" style="gap:20px">
+        <h2 id="uznaete">Что вы узнаете на разборе</h2>
+        <ul class="checklist checklist--col">
+          <li>Подходит ли вам банкротство вообще — или есть другие выходы (реструктуризация, договорённость с банком).</li>
+          <li>Какой путь ваш: бесплатно через МФЦ или через суд.</li>
+          <li>Что будет с имуществом: жильём, машиной, ипотекой.</li>
+          <li>Какие есть риски именно в вашем случае — например, сделки за последние 3 года.</li>
+          <li>Сколько это стоит и сколько займёт — с обязательными расходами, без сюрпризов. Стоимость наших услуг окончательно фиксируется в договоре и не увеличивается, даже если процедура затянется.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-labelledby="kak">
+    <div class="wrap stack" style="--gap:20px">
+      <h2 id="kak">Как проходит</h2>
+      <div class="grid" style="--min:250px;--gap:16px">
+        <div class="card"><h3>Формат</h3><p>В офисе в Сергиевом Посаде, по телефону или в переписке — как вам спокойнее.</p></div>
+        <div class="card"><h3>Длительность</h3><p>Обычно от 30 минут до часа — зависит от количества вопросов, бывает и быстрее.</p></div>
+        <div class="card"><h3>Кто консультирует</h3><p>{site.expert}, руководитель компании, 10 лет в банкротстве физлиц.</p></div>
+        <div class="card"><h3>Анонимно</h3><p>Имя называть не нужно. Оно понадобится, только если вы решите заключить договор.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-labelledby="podgotovit">
+    <div class="wrap split">
+      <div class="main card card--big" style="gap:14px">
+        <h2 id="podgotovit" style="font-size:28px">Что подготовить (необязательно)</h2>
+        <p class="muted">Можно прийти и без документов. Но если есть под рукой — разбор будет точнее:</p>
+        <ul class="checklist checklist--col">
+          <li>список долгов: кому и примерно сколько;</li>
+          <li>договоры с банками и МФО, если сохранились;</li>
+          <li>постановления приставов или судебные решения;</li>
+          <li>сведения об имуществе и крупных сделках за последние 3 года.</li>
+        </ul>
+      </div>
+      <div class="side card" style="background:var(--petrol);border:0;color:#fff">
+        <h2 style="font-size:24px;color:#fff">После консультации</h2>
+        <p style="color:var(--on-petrol)">Если банкротство вам не нужно — так и скажем. Если подходит МФЦ — подскажем, как подать заявление. Если нужен суд — вы получите цену и план, а решение принимаете сами, без срочности и давления. Назойливых звонков после консультации не будет.</p>
+      </div>
+    </div>
+  </section>
+
+  <ContactOptions title="Запишитесь на разбор — как вам удобно" sub="Связь ежедневно с 8:00 до 20:00. Можно анонимно, без имени." />
+  <Faq items={faqConsult} />
+</Base>

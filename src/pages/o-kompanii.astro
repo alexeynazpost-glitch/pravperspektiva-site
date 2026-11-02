@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Expert from '../components/Expert.astro';
+import Cases from '../components/Cases.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+import { site } from '../data/site';
+---
+<Base
+  title="О компании «Правовая перспектива» — Алексей Назаркин, банкротство физлиц | Правовая перспектива"
+  description="«Правовая перспектива» — банкротство физических лиц и ИП в Сергиевом Посаде. Дело ведёт руководитель компании Алексей Назаркин, 10 лет в банкротстве физлиц."
+  crumbs={[{ label: 'О компании' }]}
+>
+  <section class="wrap" style="padding-bottom:48px">
+    <div class="split">
+      <div class="main stack" style="--gap:20px">
+        <h1>О «Правовой перспективе»</h1>
+        <p class="lead">Мы помогаем людям выйти из долгов законно: через суд или бесплатно через МФЦ. Сначала честно говорим, нужно ли банкротство вообще, — и только потом предлагаем договор.</p>
+        <ul class="checklist checklist--col">
+          <li>Ваше дело ведёт руководитель компании, а не сменяющиеся менеджеры. На ваши вопросы отвечает тот же человек, который ведёт дело.</li>
+          <li>{site.expert} — высшее юридическое образование, 10 лет в банкротстве физлиц.</li>
+          <li>Офис — в Сергиевом Посаде, ведём дела в Арбитражном суде Московской области. Работаем дистанционно по всей России.</li>
+          <li>Цена фиксируется в договоре и не увеличивается, если процедура затянется. Рассрочка до 10 месяцев.</li>
+        </ul>
+      </div>
+      <div class="side"><Expert /></div>
+    </div>
+  </section>
+
+  <section class="section section--petrol" aria-labelledby="tajna">
+    <div class="wrap stack" style="--gap:14px;max-width:900px">
+      <h2 id="tajna">Мы ничего о вас не раскрываем</h2>
+      <p style="color:var(--on-petrol);font-size:19px">Не звоним родственникам и на работу, не публикуем имён в кейсах и отзывах без вашего согласия. Обсудить ситуацию можно анонимно — имя понадобится, только когда вы решите заключить договор. Данные с сайта хранятся на серверах в России.</p>
+    </div>
+  </section>
+
+  <Cases ids={[1, 2, 7]} />
+  <p class="wrap" style="margin-top:-40px;padding-bottom:40px"><a href="/kejsy/" style="font-weight:600">Все дела из практики →</a></p>
+
+  <section class="section section--white" aria-labelledby="rekv">
+    <div class="wrap stack" style="--gap:10px">
+      <h2 id="rekv" style="font-size:26px">Реквизиты</h2>
+      <p>{site.ipName} · ИНН {site.inn} · ОГРНИП {site.ogrnip}</p>
+      <p class="muted small">{site.address}</p>
+    </div>
+  </section>
+  <ContactOptions />
+</Base>

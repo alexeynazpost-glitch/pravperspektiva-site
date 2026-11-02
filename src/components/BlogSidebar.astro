@@ -1,0 +1,16 @@
+---
+import { blogRubrics, site, messengerHref } from '../data/site';
+const { current } = Astro.props;
+---
+<aside class="side stack" style="--gap:20px" aria-label="Боковая панель">
+  <div class="card">
+    <strong style="font-size:19px">Бесплатный разбор ситуации</strong>
+    <span class="small muted">Честно скажем, нужно ли вам банкротство. Можно анонимно.</span>
+    <a href="/kontakty/#zapis" class="btn btn--accent btn--sm">Записаться</a>
+    <a href={messengerHref(site.messengers[0])} style="font-weight:600;text-align:center;padding:8px 0">Написать в MAX</a>
+  </div>
+  <nav class="card" aria-label="Рубрики блога" style="gap:8px">
+    <strong style="font-size:19px">Рубрики</strong>
+    {blogRubrics.map((r) => <a href={`/blog/${r.slug}/`} aria-current={current === r.slug ? 'page' : undefined} style={current === r.slug ? 'font-weight:700' : ''}>{r.label}</a>)}
+  </nav>
+</aside>

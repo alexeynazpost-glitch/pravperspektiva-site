@@ -1,0 +1,21 @@
+---
+import { blogRubrics } from '../data/site';
+const { posts } = Astro.props as { posts: any[] };
+const rub = (s: string) => blogRubrics.find((r) => r.slug === s)?.label ?? '';
+---
+{posts.length === 0 ? (
+  <div class="card" style="padding:28px">
+    <h2 style="font-size:22px">Статьи скоро появятся</h2>
+    <p>Пишем простыми словами о том, как проходит банкротство, что будет с имуществом и как жить после. А пока можно <a href="/voprosy/">посмотреть ответы на частые вопросы</a> или задать свой — анонимно.</p>
+  </div>
+) : (
+  <div class="grid" style="--min:280px">
+    {posts.map((p) => (
+      <a class="card" href={`/blog/${p.data.rubric}/${p.id}/`} style="text-decoration:none;color:var(--text)">
+        <span class="note">{rub(p.data.rubric)}</span>
+        <h2 style="font-size:21px;color:var(--petrol-dark)">{p.data.title}</h2>
+        <p class="small muted">{p.data.summary}</p>
+      </a>
+    ))}
+  </div>
+)}

@@ -1,0 +1,67 @@
+# Сборка сайта и выкладка в Яндекс Облако (Object Storage).
+# Ключи доступа хранятся только в GitHub → Settings → Secrets and variables → Actions:
+#   YC_ACCESS_KEY_ID, YC_SECRET_ACCESS_KEY — статический ключ сервисного аккаунта
+#   YC_BUCKET — бакет сайта, YC_BACKUP_BUCKET — бакет для резервной копии кода
+# Переменные (Variables): PUBLIC_NOINDEX (1 — сайт закрыт от поисковиков, 0 — открыт),
+#   PUBLIC_LEAD_ENDPOINT — адрес приёма заявок, PUBLIC_YM_ID — номер счётчика Метрики.
+name: Сборка и выкладка
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    env:
+      HAS_KEYS: ${{ secrets.YC_ACCESS_KEY_ID != '' }}
+      HAS_BACKUP: ${{ secrets.YC_BACKUP_BUCKET != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Сборка
+        run: npm run build
+        env:
+          PUBLIC_NOINDEX: ${{ vars.PUBLIC_NOINDEX || '1' }}
+          PUBLIC_LEAD_ENDPOINT: ${{ vars.PUBLIC_LEAD_ENDPOINT }}
+          PUBLIC_YM_ID: ${{ vars.PUBLIC_YM_ID }}
+
+      - name: Выкладка в Object Storage
+        if: env.HAS_KEYS == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ru-central1
+        run: |
+          aws s3 sync dist/ "s3://${{ secrets.YC_BUCKET }}/" \
+            --endpoint-url=https://storage.yandexcloud.net --delete \
+            --exclude "*.html" --cache-control "public,max-age=604800"
+          aws s3 sync dist/ "s3://${{ secrets.YC_BUCKET }}/" \
+            --endpoint-url=https://storage.yandexcloud.net --delete \
+            --exclude "*" --include "*.html" --cache-control "public,max-age=300" \
+            --content-type "text/html; charset=utf-8"
+
+      - name: Резервная копия кода в Яндекс Облако
+        if: env.HAS_KEYS == 'true' && env.HAS_BACKUP == 'true'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ru-central1
+        run: |
+          git bundle create site.bundle --all
+          aws s3 cp site.bundle "s3://${{ secrets.YC_BACKUP_BUCKET }}/pravperspektiva-site-$(date +%Y%m%d-%H%M%S).bundle" \
+            --endpoint-url=https://storage.yandexcloud.net

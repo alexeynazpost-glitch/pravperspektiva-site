@@ -1,0 +1,26 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BlogSidebar from '../../../components/BlogSidebar.astro';
+import PostList from '../../../components/PostList.astro';
+import { getCollection } from 'astro:content';
+import { blogRubrics } from '../../../data/site';
+
+export function getStaticPaths() {
+  return blogRubrics.map((r) => ({ params: { rubric: r.slug }, props: { r } }));
+}
+const { r } = Astro.props;
+const posts = (await getCollection('blog', (p) => !p.data.draft && p.data.rubric === r.slug)).sort((a, b) => +b.data.date - +a.data.date);
+---
+<Base
+  title={`${r.label} — статьи о банкротстве | Правовая перспектива`}
+  description={`Статьи блога «Правовой перспективы» в рубрике «${r.label}»: простыми словами и со ссылками на закон.`}
+  crumbs={[{ href: '/blog/', label: 'Блог' }, { label: r.label }]}
+>
+  <div class="wrap split" style="padding-bottom:72px">
+    <div class="main stack">
+      <h1 style="font-size:clamp(30px,4vw,44px)">{r.label}</h1>
+      <PostList posts={posts} />
+    </div>
+    <BlogSidebar current={r.slug} />
+  </div>
+</Base>

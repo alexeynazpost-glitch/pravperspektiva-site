@@ -1,0 +1,161 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Crumb { href?: string; label: string }
+interface FaqItem { q: string; a: string }
+interface Props {
+  title: string;
+  description: string;
+  crumbs?: Crumb[];
+  faq?: FaqItem[];
+  type?: 'website' | 'article';
+  schema?: Record<string, unknown>[];
+}
+const { title, description, crumbs = [], faq = [], type = 'website', schema = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const noindex = import.meta.env.PUBLIC_NOINDEX !== '0';
+const ymId = import.meta.env.PUBLIC_YM_ID;
+const strip = (h: string) => h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'LegalService',
+  '@id': site.url + '/#org',
+  name: site.name,
+  description: 'Банкротство физических лиц и ИП: через суд и через МФЦ. Сергиев Посад, Московская область, дистанционно по России.',
+  url: site.url + '/',
+  telephone: site.phoneE164,
+  priceRange: 'от 100 000 ₽',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'пр. Красной Армии, 212Б, офис 13',
+    addressLocality: 'Сергиев Посад',
+    addressRegion: 'Московская область',
+    addressCountry: 'RU',
+  },
+  openingHoursSpecification: [{
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: '08:00', closes: '20:00',
+  }],
+  areaServed: ['Сергиев Посад', 'Московская область', 'Россия'],
+  founder: { '@type': 'Person', name: site.expert },
+};
+const ld: Record<string, unknown>[] = [org, ...schema];
+if (crumbs.length) {
+  ld.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ label: 'Главная', href: '/' }, ...crumbs].map((c, i) => ({
+      '@type': 'ListItem', position: i + 1, name: c.label,
+      ...(c.href || i === crumbs.length ? { item: new URL(c.href || Astro.url.pathname, site.url).href } : {}),
+    })),
+  });
+}
+if (faq.length) {
+  ld.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: strip(f.a) } })),
+  });
+}
+---
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  <meta name="theme-color" content="#0F4C5C" />
+  <meta property="og:type" content={type} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:site_name" content={site.name} />
+  <meta property="og:locale" content="ru_RU" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preload" href="/fonts/golos-text-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/golos-text-cyrillic-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <script type="application/ld+json" set:html={JSON.stringify(ld.length === 1 ? ld[0] : ld)} />
+</head>
+<body>
+  <a class="skip" href="#main">Перейти к содержанию</a>
+  <Header />
+  <main id="main">
+    {crumbs.length > 0 && (
+      <div class="wrap page-top">
+        <nav class="crumbs" aria-label="Хлебные крошки">
+          <a href="/">Главная</a>
+          {crumbs.map((c) => (
+            <>
+              <span aria-hidden="true">/</span>
+              {c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+            </>
+          ))}
+        </nav>
+      </div>
+    )}
+    <slot />
+  </main>
+  <Footer />
+  <div class="mobile-bar" aria-label="Быстрая связь">
+    <a href={site.phoneHref} class="btn btn--petrol">Позвонить</a>
+    <a href="/kontakty/#srazu" class="btn btn--accent">Написать</a>
+  </div>
+  <div class="cookie" id="cookie" hidden role="region" aria-label="Уведомление о cookie">
+    <p>Сайт использует cookie и сервис Яндекс Метрика, чтобы понимать, какие страницы полезны. Данные хранятся в России. Подробнее — в <a href="/politika/">политике конфиденциальности</a>.</p>
+    <button type="button" class="btn btn--petrol btn--sm" id="cookie-ok">Понятно</button>
+  </div>
+  <script is:inline>
+    (function () {
+      var b = document.getElementById('cookie');
+      var ok = false;
+      try { ok = localStorage.getItem('pp-cookie') === '1'; } catch (e) {}
+      if (!ok) b.hidden = false;
+      document.getElementById('cookie-ok').addEventListener('click', function () {
+        b.hidden = true;
+        try { localStorage.setItem('pp-cookie', '1'); } catch (e) {}
+      });
+    })();
+  </script>
+  <script is:inline define:vars={{ endpoint: import.meta.env.PUBLIC_LEAD_ENDPOINT || '', phone: site.phone }}>
+    // Отправка заявок. Адрес приёма заявок (Яндекс Облако) подключим на следующем шаге.
+    document.querySelectorAll('form[data-lead]').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var msg = form.querySelector('.form-msg');
+        var show = function (cls, text) { msg.className = 'form-msg ' + cls; msg.textContent = text; msg.hidden = false; };
+        var consent = form.querySelector('input[name=consent]');
+        var contact = form.querySelector('[name=contact]');
+        if (contact && !contact.value.trim()) { show('err', 'Укажите телефон или ник, чтобы мы могли связаться.'); contact.focus(); return; }
+        if (consent && !consent.checked) { show('err', 'Чтобы отправить заявку, отметьте согласие на обработку персональных данных.'); return; }
+        var extra = form.dataset.extra ? JSON.parse(form.dataset.extra) : {};
+        var data = Object.assign({ form: form.dataset.lead, page: location.pathname }, extra);
+        new FormData(form).forEach(function (v, k) { if (k !== 'consent') data[k] = v; });
+        if (!endpoint) {
+          show('err', 'Сайт работает в тестовом режиме — заявка пока не отправляется. Позвоните или напишите нам: ' + phone + '.');
+          return;
+        }
+        var btn = form.querySelector('button[type=submit]');
+        btn.disabled = true;
+        fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+          .then(function (r) { if (!r.ok) throw new Error(); show('ok', form.dataset.ok || 'Спасибо, заявка принята.'); form.reset(); })
+          .catch(function () { show('err', 'Не получилось отправить. Позвоните или напишите нам: ' + phone + '.'); })
+          .finally(function () { btn.disabled = false; });
+      });
+    });
+  </script>
+  {ymId && (
+    <script is:inline define:vars={{ ymId }}>
+      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+      ym(Number(ymId),'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:false});
+    </script>
+  )}
+</body>
+</html>

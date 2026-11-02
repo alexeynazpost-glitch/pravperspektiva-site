@@ -1,0 +1,22 @@
+---
+import Logo from './Logo.astro';
+import { site, nav } from '../data/site';
+const path = Astro.url.pathname;
+---
+<header class="site-header">
+  <div class="in">
+    <a href="/" class="logo" aria-label="Правовая перспектива — на главную">
+      <Logo />
+      <span class="t"><span class="n">{site.name}</span><span class="s">{site.tagline}</span></span>
+    </a>
+    <nav class="pp-nav" aria-label="Основное меню">
+      {nav.map((n) => (
+        <a href={n.href} aria-current={path === n.href || (n.href !== '/' && !n.href.includes('#') && path.startsWith(n.href)) ? 'page' : undefined}>{n.label}</a>
+      ))}
+    </nav>
+    <div class="head-cta">
+      <a href={site.phoneHref} class="head-phone">{site.phone}</a>
+      <a href="/kontakty/#zapis" class="btn btn--accent btn--sm">Записаться<span class="hide-m">&nbsp;на разбор</span></a>
+    </div>
+  </div>
+</header>

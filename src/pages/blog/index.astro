@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import BlogSidebar from '../../components/BlogSidebar.astro';
+import PostList from '../../components/PostList.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('blog', (p) => !p.data.draft)).sort((a, b) => +b.data.date - +a.data.date);
+---
+<Base
+  title="Блог о банкротстве физических лиц — простыми словами | Правовая перспектива"
+  description="Статьи о банкротстве физических лиц: как проходит процедура, что будет с имуществом, какие долги списываются и как жить после банкротства."
+  crumbs={[{ label: 'Блог' }]}
+>
+  <div class="wrap split" style="padding-bottom:72px">
+    <div class="main stack">
+      <h1 style="font-size:clamp(30px,4vw,44px)">Блог о банкротстве</h1>
+      <p class="lead">Простыми словами о том, как устроено банкротство и как жить после него. Пишет Алексей Назаркин, руководитель «Правовой перспективы».</p>
+      <PostList posts={posts} />
+    </div>
+    <BlogSidebar />
+  </div>
+</Base>

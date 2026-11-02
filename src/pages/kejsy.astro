@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Cases from '../components/Cases.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+---
+<Base
+  title="Кейсы: реальные дела по банкротству физических лиц и ИП | Правовая перспектива"
+  description="Дела из нашей практики без имён клиентов: сохранение жилья и машины, ипотека, ИП, пенсионеры, банкротство через МФЦ. Арбитражный суд Московской области."
+  crumbs={[{ label: 'Кейсы' }]}
+>
+  <section class="wrap stack" style="--gap:16px">
+    <h1>Дела из нашей практики</h1>
+    <p class="lead">Реальные дела без имён клиентов. Номера дел публикуем только с согласия клиента.</p>
+  </section>
+  <Cases ids={[1, 2, 7]} title="Через суд: физические лица" sub="" id="fiz" />
+  <Cases ids={[3, 4]} title="Банкротство ИП" sub="" id="ip" bg="white" />
+  <Cases ids={[5, 6]} title="Пенсионеры, в том числе через МФЦ" sub="" id="pens" />
+  <ContactOptions title="Расскажите о своей ситуации" />
+</Base>

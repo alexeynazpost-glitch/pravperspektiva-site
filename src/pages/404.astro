@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+<Base title="Страница не найдена | Правовая перспектива" description="Такой страницы нет на сайте «Правовая перспектива».">
+  <section class="wrap stack" style="padding:64px 24px 96px;max-width:760px">
+    <h1>Такой страницы нет</h1>
+    <p class="lead">Возможно, ссылка устарела. Начните с главной или просто напишите нам — подскажем.</p>
+    <div class="row">
+      <a href="/" class="btn btn--accent">На главную</a>
+      <a href={site.phoneHref} class="btn btn--outline">{site.phone}</a>
+    </div>
+  </section>
+</Base>

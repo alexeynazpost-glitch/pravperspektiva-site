@@ -1,0 +1,30 @@
+---
+import { prices } from '../data/site';
+interface Props { calcHref?: string; note?: string }
+const { calcHref = '/#calc', note = 'Стоимость наших услуг окончательно фиксируется в договоре и не увеличивается, если процедура затянется.' } = Astro.props;
+---
+<section id="stoimost" class="section" aria-labelledby="stoim-h">
+  <div class="wrap stack">
+    <h2 id="stoim-h">Сколько стоит</h2>
+    <div class="grid" style="--min:320px">
+      <div class="card">
+        <h3>Наши услуги</h3>
+        <p class="note">Цена зависит от того, сколько у вас кредиторов (банков, МФО, ЖКХ, налоговая) и есть ли имущество.</p>
+        <div class="price-rows">
+          {prices.map((p) => <div class="price-row"><span>{p.cond}</span><strong>{p.price}</strong></div>)}
+        </div>
+        <p class="note">{note}</p>
+      </div>
+      <div class="card">
+        <h3>Обязательные расходы по закону</h3>
+        <div class="price-rows">
+          <div class="price-row"><span>Вознаграждение финансового управляющего — вносится на депозит суда за каждую процедуру</span><strong>25 000 ₽</strong></div>
+          <div class="price-row"><span>Публикации в ЕФРСБ и «Коммерсанте», почтовые расходы</span><strong>обычно около 20 000 ₽</strong></div>
+          <div class="price-row"><span>Госпошлина за заявление должника о своём банкротстве</span><strong>не оплачивается</strong></div>
+        </div>
+        <p class="note">Сумма публикаций и почты зависит от сложности дела: сколько нужно публикаций и писем кредиторам.</p>
+      </div>
+    </div>
+    <a href={calcHref} class="btn btn--accent" style="align-self:flex-start">Рассчитать для моей ситуации</a>
+  </div>
+</section>

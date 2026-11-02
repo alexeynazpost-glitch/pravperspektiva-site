@@ -1,0 +1,35 @@
+---
+import { cases, casesNote } from '../data/cases';
+interface Props {
+  ids: number[];
+  title?: string;
+  sub?: string;
+  /** 'all' — показывать город у всех кейсов; иначе название города, у которого город показываем (страницы городов) */
+  showCity?: 'all' | string;
+  id?: string;
+  bg?: 'none' | 'white';
+}
+const { ids, title = 'Из нашей практики', sub = 'Реальные дела без имён клиентов.', showCity = 'all', id = 'kejsy', bg = 'none' } = Astro.props;
+const list = ids.map((i) => cases[i]);
+---
+<section class={'section' + (bg === 'white' ? ' section--white' : '')} id={id} aria-labelledby={id + '-h'}>
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id={id + '-h'}>{title}</h2>
+      {sub && <p class="muted">{sub}</p>}
+    </div>
+    <div class="grid" style="--min:300px">
+      {list.map((c) => {
+        const city = c.city && (showCity === 'all' || showCity === c.city) ? c.city : null;
+        return (
+          <article class="card case">
+            <span class="who">{city ? `${city} · ${c.label}` : c.label}</span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </article>
+        );
+      })}
+    </div>
+    <p class="note" style="margin-top:16px">{casesNote}</p>
+  </div>
+</section>

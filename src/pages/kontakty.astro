@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import BookingForm from '../components/BookingForm.astro';
+import CallbackForm from '../components/CallbackForm.astro';
+import { site, messengerHref } from '../data/site';
+---
+<Base
+  title="Контакты — юрист по банкротству в Сергиевом Посаде, пр. Красной Армии, 212Б | Правовая перспектива"
+  description="Офис в Сергиевом Посаде, пр. Красной Армии, 212Б, оф. 13. На связи ежедневно с 8:00 до 20:00. Телефон +7 (995) 157-89-88, MAX, Telegram. Запись на бесплатный разбор онлайн."
+  crumbs={[{ label: 'Контакты' }]}
+>
+  <div class="wrap stack" style="--gap:32px;padding-bottom:72px">
+    <h1 style="font-size:clamp(30px,4vw,44px)">Контакты и запись на бесплатный разбор</h1>
+    <div class="split" style="gap:32px">
+      <div class="main"><BookingForm /></div>
+      <aside class="side stack" style="--gap:20px" aria-label="Контакты">
+        <div class="card" style="gap:14px;border-radius:22px;padding:26px">
+          <h2 style="font-size:22px">Офис в Сергиевом Посаде</h2>
+          <p>{site.addressStreet}</p>
+          <p class="small muted">На машине — по адресу в навигаторе, парковка во дворе или рядом со зданием. От вокзала — автобусом или маршруткой № 1, 23 или 46 до остановки «Фабрика кухни», дальше около 5 минут пешком. Офис 13 на 3 этаже.</p>
+          <p class="small muted">Офис открыт с понедельника по пятницу, в субботу и воскресенье — по записи. По телефону и в мессенджерах на связи ежедневно с 8:00 до 20:00.</p>
+          <a href={site.mapUrl} target="_blank" rel="noopener" class="btn btn--outline btn--sm" style="align-self:flex-start">Открыть в Яндекс Картах</a>
+        </div>
+        <div id="srazu" class="card" style="gap:12px;border-radius:22px;padding:26px">
+          <h2 style="font-size:22px">Связаться сразу</h2>
+          <a href={site.phoneHref} style="font-size:24px;font-weight:700;color:var(--petrol-dark);text-decoration:none;white-space:nowrap">{site.phone}</a>
+          <div class="row" style="--gap:8px">
+            {site.messengers.map((m) => <a href={messengerHref(m)} class={'btn btn--sm ' + (m.primary ? 'btn--petrol' : 'btn--outline')}>{m.name}</a>)}
+          </div>
+          <p class="note">Звоним и пишем только с этого номера. Мы не банк и не коллекторы.</p>
+        </div>
+        <CallbackForm title="Или просто оставьте номер" idp="cb-kont" />
+      </aside>
+    </div>
+
+    <div class="grid" style="--min:300px">
+      <section class="card card--big" aria-labelledby="dist">
+        <h2 id="dist" style="font-size:26px">Работаем дистанционно</h2>
+        <p>Если вы живёте далеко, приезжать не обязательно: консультация — по телефону или в переписке, документы — онлайн, в суде представляем вас по нотариальной доверенности. Договор заключаем по электронной почте или обычной почтой. <a href="/distancionno/">Подробнее</a></p>
+      </section>
+      <section class="card card--big" aria-labelledby="rekv">
+        <h2 id="rekv" style="font-size:26px">Реквизиты</h2>
+        <p>{site.ipName}<br />ИНН {site.inn}<br />ОГРНИП {site.ogrnip}</p>
+      </section>
+    </div>
+  </div>
+</Base>

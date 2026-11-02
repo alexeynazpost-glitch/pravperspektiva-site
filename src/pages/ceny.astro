@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import PriceCards from '../components/PriceCards.astro';
+import Calculator from '../components/Calculator.astro';
+import ContactOptions from '../components/ContactOptions.astro';
+---
+<Base
+  title="Цены на банкротство физических лиц — от 100 000 ₽, рассрочка до 10 месяцев | Правовая перспектива"
+  description="Стоимость судебного банкротства от 100 000 ₽, помощь с банкротством через МФЦ — 50 000 ₽, консультация бесплатно. Цена фиксируется в договоре, рассрочка до 10 месяцев."
+  crumbs={[{ label: 'Цены' }]}
+>
+  <section class="wrap stack" style="--gap:16px;padding-bottom:24px">
+    <h1>Цены на банкротство</h1>
+    <p class="lead">Цена зависит от того, сколько у вас кредиторов и есть ли имущество. Стоимость наших услуг окончательно фиксируется в договоре и не увеличивается, если процедура затянется. Рассрочка до 10 месяцев.</p>
+  </section>
+  <PriceCards link={false} />
+  <section class="section" aria-labelledby="drugoe">
+    <div class="wrap stack" style="--gap:20px">
+      <h2 id="drugoe">Другие услуги</h2>
+      <div class="grid" style="--min:260px;--gap:16px">
+        <div class="card"><span class="note">Бесплатная консультация</span><span class="price-badge" style="font-size:26px">0 ₽</span><p class="small">От 30 минут до часа: в офисе, по телефону или в переписке. <a href="/konsultaciya/">Подробнее</a></p></div>
+        <div class="card"><span class="note">Помощь с банкротством через МФЦ</span><span class="price-badge" style="font-size:26px">50 000 ₽</span><p class="small">Сама процедура в МФЦ бесплатная. <a href="/bankrotstvo-cherez-mfc/">Подробнее</a></p></div>
+        <div class="card"><span class="note">Банкротство ИП</span><span class="price-badge" style="font-size:26px">от 100 000 ₽</span><p class="small">Как правило, как для физлиц. Точную сумму назовём после бесплатного разбора. <a href="/bankrotstvo-ip/">Подробнее</a></p></div>
+        <div class="card"><span class="note">Коллекторы, аресты счетов, судебный приказ, реструктуризация</span><p class="small" style="margin-top:auto">Стоимость зависит от объёма работы — назовём её после бесплатного разбора и зафиксируем в договоре.</p></div>
+      </div>
+      <p class="callout">Стоимость не зависит от города: для жителей Сергиева Посада, Пушкино, Мытищ, Королёва, Щёлково и Дмитрова цена одна. Госпошлина за заявление должника о своём банкротстве не оплачивается.</p>
+    </div>
+  </section>
+  <Calculator />
+  <ContactOptions />
+</Base>
