@@ -1,7 +1,7 @@
 # Проверка бота MAX: находит ваш ID в MAX и присылает тестовое сообщение.
-# Запуск вручную: вкладка Actions → «Проверка бота MAX» → Run workflow.
-# Нужен секрет MAX_BOT_TOKEN (Settings → Secrets and variables → Actions)
-# и хотя бы одно ваше сообщение боту в MAX.
+# Запуск: вкладка Actions → «Проверка бота MAX» → Run workflow,
+# затем в течение 3 минут напишите боту в MAX любое сообщение.
+# Нужен секрет MAX_BOT_TOKEN (Settings → Secrets and variables → Actions).
 name: Проверка бота MAX
 
 on:
@@ -10,6 +10,7 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
       - name: Найти ID и отправить тест
         env:
@@ -18,26 +19,25 @@ jobs:
           set -e
           if [ -z "$TOKEN" ]; then echo "::error::Нет секрета MAX_BOT_TOKEN"; exit 1; fi
           API=https://platform-api2.max.ru
-          CA=""
-          # Сервер MAX может использовать сертификат Минцифры — подключаем его, если обычная проверка не проходит
-          if ! curl -sS -o /dev/null "$API/me" -H "Authorization: $TOKEN"; then
-            curl -sSL -o ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
-            CA="--cacert ru-ca.pem"
-          fi
-          echo "== Бот:"; curl -sS $CA "$API/me" -H "Authorization: $TOKEN" | jq '{user_id, name, username}'
-          UPD=$(curl -sS $CA "$API/updates?limit=100&timeout=0" -H "Authorization: $TOKEN")
-          echo "== Событий: $(echo "$UPD" | jq '.updates | length')"
-          echo "$UPD" | jq -c '.updates[]? | {update_type, sender: (.message.sender.user_id // .user.user_id // null)}' | head -10
-          CH=$(curl -sS $CA "$API/chats?count=50" -H "Authorization: $TOKEN")
-          echo "== Чатов: $(echo "$CH" | jq '.chats | length')"
-          echo "$CH" | jq -c '.chats[]? | {type, chat_id, with: .dialog_with_user.user_id}' | head -10
-          ID=$(echo "$UPD" | jq -r '[.updates[]? | (.message.sender.user_id // .user.user_id // empty)] | last // empty')
-          [ -z "$ID" ] && ID=$(echo "$CH" | jq -r '[.chats[]? | select(.type=="dialog") | .dialog_with_user.user_id // empty] | first // empty')
+          # Серверы MAX используют сертификат Минцифры
+          curl -sSL -o ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
+          cat /etc/ssl/certs/ca-certificates.crt ru-ca.pem > ca.pem
+          c() { curl -sS --cacert ca.pem -H "Authorization: $TOKEN" "$@"; }
+          echo "== Бот:"; c "$API/me" | jq -c '{user_id, name, username}'
+          echo "== Подписки (вебхуки):"; c "$API/subscriptions" | jq -c '.'
+          ID=""; MARKER=""
+          for i in 1 2 3 4 5 6; do
+            echo "== Жду сообщение боту… (попытка $i из 6, до 30 сек)"
+            UPD=$(c "$API/updates?limit=100&timeout=30${MARKER:+&marker=$MARKER}")
+            echo "$UPD" | jq -c '.updates[]? | {update_type, sender: (.message.sender.user_id // .user.user_id // null)}'
+            MARKER=$(echo "$UPD" | jq -r '.marker // empty')
+            ID=$(echo "$UPD" | jq -r '[.updates[]? | (.message.sender.user_id // .user.user_id // empty)] | last // empty')
+            [ -n "$ID" ] && break
+          done
           if [ -z "$ID" ]; then
-            echo "::error::Бот пока не получал сообщений. Напишите боту в MAX «Привет» и запустите проверку ещё раз."
-            echo "$CH" | jq -c 'del(.chats[]?.last_message)' | head -c 1500
+            echo "::error::За 3 минуты бот не получил ни одного сообщения."
             exit 1
           fi
-          echo "== Ваш ID в MAX: $ID  (впишите его в переменную MAX_USER_ID)"
-          curl -sS $CA -X POST "$API/messages?user_id=$ID" -H "Authorization: $TOKEN" -H "Content-Type: application/json" \
-            -d '{"text":"✅ Юстика: проверка связи. Сюда будут приходить заявки с сайта yustika.ru."}' | jq '{ok: (.message != null)}'
+          echo "== Ваш ID в MAX: $ID"
+          c -X POST "$API/messages?user_id=$ID" -H "Content-Type: application/json" \
+            -d '{"text":"✅ Юстика: проверка связи. Сюда будут приходить заявки с сайта yustika.ru."}' | jq -c '{sent: (.message != null), error: .message?.code?}'
