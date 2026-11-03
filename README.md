@@ -34,7 +34,7 @@ npm run build   # собрать в папку dist/
 
 - [ ] Ссылки на MAX, Telegram, ВКонтакте → `src/data/site.ts`, поле `messengers`
 - [x] Почта для обращений: info@yustika.ru (ящик в Яндекс 360)
-- [ ] Фото эксперта (сейчас монограмма «АН») → `src/components/Expert.astro`
+- [x] Фото эксперта — public/img/nazarkin-*
 - [ ] Политика и согласие: номер в реестре операторов Роскомнадзора, почтовый адрес, срок хранения, дата → `src/pages/politika.astro`, `src/pages/soglasie.astro`
 - [ ] Адрес приёма заявок (Яндекс Облако) → переменная `PUBLIC_LEAD_ENDPOINT`
 - [ ] Счётчик Яндекс Метрики → переменная `PUBLIC_YM_ID`
