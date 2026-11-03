@@ -1,6 +1,6 @@
 # Как добавить статью в блог
 
-Одна статья — один файл в папке `src/content/blog/`. Имя файла станет адресом статьи, поэтому пишем его латиницей через дефис: `kredit-posle-bankrotstva.md` → `pravperspektiva.ru/blog/posledstviya/kredit-posle-bankrotstva/`.
+Одна статья — один файл в папке `src/content/blog/`. Имя файла станет адресом статьи, поэтому пишем его латиницей через дефис: `kredit-posle-bankrotstva.md` → `yustika.ru/blog/posledstviya/kredit-posle-bankrotstva/`.
 
 ## Шаблон
 

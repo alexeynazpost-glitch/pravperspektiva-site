@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 const noindex = process.env.PUBLIC_NOINDEX !== '0';
 
 export default defineConfig({
-  site: 'https://pravperspektiva.ru',
+  site: 'https://yustika.ru',
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'always' },
   integrations: noindex ? [] : [sitemap({ filter: (p) => !p.includes('/404') })],

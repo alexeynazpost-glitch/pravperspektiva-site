@@ -5,6 +5,6 @@ export const GET: APIRoute = () => {
   const noindex = import.meta.env.PUBLIC_NOINDEX !== '0';
   const body = noindex
     ? 'User-agent: *\nDisallow: /\n'
-    : 'User-agent: *\nDisallow: /404/\nDisallow: /*?\n\nSitemap: https://pravperspektiva.ru/sitemap-index.xml\n';
+    : 'User-agent: *\nDisallow: /404/\nDisallow: /*?\n\nSitemap: https://yustika.ru/sitemap-index.xml\n';
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 };

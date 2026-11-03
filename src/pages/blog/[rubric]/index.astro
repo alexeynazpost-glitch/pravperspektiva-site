@@ -12,8 +12,8 @@ const { r } = Astro.props;
 const posts = (await getCollection('blog', (p) => !p.data.draft && p.data.rubric === r.slug)).sort((a, b) => +b.data.date - +a.data.date);
 ---
 <Base
-  title={`${r.label} — статьи о банкротстве | Правовая перспектива`}
-  description={`Статьи блога «Правовой перспективы» в рубрике «${r.label}»: простыми словами и со ссылками на закон.`}
+  title={`${r.label} — статьи о банкротстве | Юстика`}
+  description={`Статьи блога «Юстики» в рубрике «${r.label}»: простыми словами и со ссылками на закон.`}
   crumbs={[{ href: '/blog/', label: 'Блог' }, { label: r.label }]}
 >
   <div class="wrap split" style="padding-bottom:72px">
