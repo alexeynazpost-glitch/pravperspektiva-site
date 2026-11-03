@@ -26,10 +26,16 @@ jobs:
           fi
           echo "== Бот:"; curl -sS $CA "$API/me" -H "Authorization: $TOKEN" | jq '{user_id, name, username}'
           UPD=$(curl -sS $CA "$API/updates?limit=100&timeout=0" -H "Authorization: $TOKEN")
+          echo "== Событий: $(echo "$UPD" | jq '.updates | length')"
+          echo "$UPD" | jq -c '.updates[]? | {update_type, sender: (.message.sender.user_id // .user.user_id // null)}' | head -10
+          CH=$(curl -sS $CA "$API/chats?count=50" -H "Authorization: $TOKEN")
+          echo "== Чатов: $(echo "$CH" | jq '.chats | length')"
+          echo "$CH" | jq -c '.chats[]? | {type, chat_id, with: .dialog_with_user.user_id}' | head -10
           ID=$(echo "$UPD" | jq -r '[.updates[]? | (.message.sender.user_id // .user.user_id // empty)] | last // empty')
+          [ -z "$ID" ] && ID=$(echo "$CH" | jq -r '[.chats[]? | select(.type=="dialog") | .dialog_with_user.user_id // empty] | first // empty')
           if [ -z "$ID" ]; then
             echo "::error::Бот пока не получал сообщений. Напишите боту в MAX «Привет» и запустите проверку ещё раз."
-            echo "$UPD" | jq -c '.updates[]? | {update_type}' | head -5
+            echo "$CH" | jq -c 'del(.chats[]?.last_message)' | head -c 1500
             exit 1
           fi
           echo "== Ваш ID в MAX: $ID  (впишите его в переменную MAX_USER_ID)"
