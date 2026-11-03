@@ -1,0 +1,37 @@
+# Проверка бота MAX: находит ваш ID в MAX и присылает тестовое сообщение.
+# Запуск вручную: вкладка Actions → «Проверка бота MAX» → Run workflow.
+# Нужен секрет MAX_BOT_TOKEN (Settings → Secrets and variables → Actions)
+# и хотя бы одно ваше сообщение боту в MAX.
+name: Проверка бота MAX
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Найти ID и отправить тест
+        env:
+          TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+        run: |
+          set -e
+          if [ -z "$TOKEN" ]; then echo "::error::Нет секрета MAX_BOT_TOKEN"; exit 1; fi
+          API=https://platform-api2.max.ru
+          CA=""
+          # Сервер MAX может использовать сертификат Минцифры — подключаем его, если обычная проверка не проходит
+          if ! curl -sS -o /dev/null "$API/me" -H "Authorization: $TOKEN"; then
+            curl -sSL -o ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
+            CA="--cacert ru-ca.pem"
+          fi
+          echo "== Бот:"; curl -sS $CA "$API/me" -H "Authorization: $TOKEN" | jq '{user_id, name, username}'
+          UPD=$(curl -sS $CA "$API/updates?limit=100&timeout=0" -H "Authorization: $TOKEN")
+          ID=$(echo "$UPD" | jq -r '[.updates[]? | (.message.sender.user_id // .user.user_id // empty)] | last // empty')
+          if [ -z "$ID" ]; then
+            echo "::error::Бот пока не получал сообщений. Напишите боту в MAX «Привет» и запустите проверку ещё раз."
+            echo "$UPD" | jq -c '.updates[]? | {update_type}' | head -5
+            exit 1
+          fi
+          echo "== Ваш ID в MAX: $ID  (впишите его в переменную MAX_USER_ID)"
+          curl -sS $CA -X POST "$API/messages?user_id=$ID" -H "Authorization: $TOKEN" -H "Content-Type: application/json" \
+            -d '{"text":"✅ Юстика: проверка связи. Сюда будут приходить заявки с сайта yustika.ru."}' | jq '{ok: (.message != null)}'
