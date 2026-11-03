@@ -1,10 +1,13 @@
 ---
 import { site } from '../data/site';
+// photo: 'ulybka' — в костюме у книжных полок (главная), 'zhilet' — в жилете (О компании)
+const { photo = 'ulybka' } = Astro.props;
+const base = photo === 'zhilet' ? '/img/nazarkin' : '/img/nazarkin-ulybka';
 ---
 <aside class="card" aria-label="Кто вам ответит" style="gap:16px;padding:24px;border-radius:20px">
   <picture>
-    <source type="image/webp" srcset="/img/nazarkin-480.webp 480w, /img/nazarkin-800.webp 800w" sizes="(max-width: 640px) 90vw, 360px" />
-    <img src="/img/nazarkin-800.jpg" alt={site.expert + ', руководитель «Юстики»'} width="800" height="1000" loading="eager" decoding="async" style="display:block;width:100%;height:auto;max-height:420px;object-fit:cover;object-position:50% 20%;border-radius:14px;background:#E6EFEF" />
+    <source type="image/webp" srcset={`${base}-480.webp 480w, ${base}-800.webp 800w`} sizes="(max-width: 640px) 90vw, 360px" />
+    <img src={`${base}-800.jpg`} alt={site.expert + ', руководитель «Юстики»'} width="800" height="1000" loading="eager" decoding="async" style="display:block;width:100%;height:auto;max-height:420px;object-fit:cover;object-position:50% 20%;border-radius:14px;background:#E6EFEF" />
   </picture>
   <div style="display:flex;flex-direction:column;gap:4px">
     <span style="font-weight:700;font-size:20px;color:var(--text)">{site.expert}</span>
