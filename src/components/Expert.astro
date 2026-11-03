@@ -1,8 +1,8 @@
 ---
 import { site } from '../data/site';
-// photo: 'ulybka' — в костюме у книжных полок (главная), 'zhilet' — в жилете (О компании)
+// photo: 'ulybka' — в костюме у книжных полок (главная), 'rubashka' — в белой рубашке (О компании), 'zhilet' — запасное
 const { photo = 'ulybka' } = Astro.props;
-const base = photo === 'zhilet' ? '/img/nazarkin' : '/img/nazarkin-ulybka';
+const base = { zhilet: '/img/nazarkin', rubashka: '/img/nazarkin-rubashka' }[photo] ?? '/img/nazarkin-ulybka';
 ---
 <aside class="card" aria-label="Кто вам ответит" style="gap:16px;padding:24px;border-radius:20px">
   <picture>
