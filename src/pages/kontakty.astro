@@ -25,7 +25,7 @@ import { site, messengerHref } from '../data/site';
           <h2 style="font-size:22px">Связаться сразу</h2>
           <a href={site.phoneHref} style="font-size:24px;font-weight:700;color:var(--petrol-dark);text-decoration:none;white-space:nowrap">{site.phone}</a>
           <div class="row" style="--gap:8px">
-            {site.messengers.map((m) => <a href={messengerHref(m)} class={'btn btn--sm ' + (m.primary ? 'btn--petrol' : 'btn--outline')}>{m.name}</a>)}
+            {site.messengers.map((m) => <a href={messengerHref(m)} target={m.href ? '_blank' : undefined} rel={m.href ? 'noopener' : undefined} class={'btn btn--sm ' + (m.primary ? 'btn--petrol' : 'btn--outline')}>{m.name}</a>)}
           </div>
           <p class="note">Звоним и пишем только с этого номера. Мы не банк и не коллекторы.</p>
         </div>

@@ -16,7 +16,7 @@ const { title = 'Как связаться — выбирайте сами', sub
         <p class="small">Прочитаете ответ, когда удобно. Отвечать сразу не нужно.</p>
         <div class="row" style="--gap:8px;margin-top:auto">
           {site.messengers.map((m) => (
-            <a href={messengerHref(m)} class={'btn btn--sm ' + (m.primary ? 'btn--petrol' : 'btn--outline')}>{m.name}</a>
+            <a href={messengerHref(m)} target={m.href ? '_blank' : undefined} rel={m.href ? 'noopener' : undefined} class={'btn btn--sm ' + (m.primary ? 'btn--petrol' : 'btn--outline')}>{m.name}</a>
           ))}
         </div>
       </div>

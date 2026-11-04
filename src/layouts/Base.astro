@@ -43,6 +43,7 @@ const org = {
   }],
   areaServed: ['Сергиев Посад', 'Московская область', 'Россия'],
   founder: { '@type': 'Person', name: site.expert },
+  sameAs: site.messengers.map((m) => m.href).filter(Boolean),
 };
 const ld: Record<string, unknown>[] = [org, ...schema];
 if (crumbs.length) {
