@@ -32,7 +32,7 @@ npm run build   # собрать в папку dist/
 
 ## Что осталось заполнить перед запуском
 
-- [ ] Ссылки на MAX, Telegram, ВКонтакте → `src/data/site.ts`, поле `messengers`
+- [x] Ссылки на MAX, Telegram (t.me/yustika_ru), ВКонтакте (vk.ru/yustika_ru)
 - [x] Почта для обращений: info@yustika.ru (ящик в Яндекс 360)
 - [x] Фото эксперта — public/img/nazarkin-*
 - [ ] Политика и согласие: номер в реестре операторов Роскомнадзора, почтовый адрес, срок хранения, дата → `src/pages/politika.astro`, `src/pages/soglasie.astro`

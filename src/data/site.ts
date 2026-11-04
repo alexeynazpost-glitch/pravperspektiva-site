@@ -23,7 +23,7 @@ export const site = {
   ogrnip: '304644317400020',
   // ЗАПОЛНИТЬ: ссылки на мессенджеры (пока ведут на страницу контактов)
   messengers: [
-    { name: 'MAX', href: '', primary: true },
+    { name: 'MAX', href: 'https://max.ru/u/f9LHodD0cOLuxbULPsKQy4MkjOIpaV3AERLaBEBnrHLGzVu3RHi7QtmYiHg', primary: true },
     { name: 'Telegram', href: 'https://t.me/yustika_ru' },
     { name: 'ВКонтакте', href: 'https://vk.ru/yustika_ru' },
   ],
