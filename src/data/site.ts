@@ -25,7 +25,7 @@ export const site = {
   messengers: [
     { name: 'MAX', href: '', primary: true },
     { name: 'Telegram', href: 'https://t.me/yustika_ru' },
-    { name: 'ВКонтакте', href: '' },
+    { name: 'ВКонтакте', href: 'https://vk.ru/yustika_ru' },
   ],
   // ЗАПОЛНИТЬ: почта для запросов по персональным данным
   email: 'info@yustika.ru',
