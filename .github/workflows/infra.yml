@@ -36,4 +36,7 @@ jobs:
       - name: Выполнить шаг
         env:
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ru-central1
         run: bash infra/run.sh "${{ inputs.step }}"

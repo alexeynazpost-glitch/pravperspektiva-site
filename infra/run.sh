@@ -99,8 +99,9 @@ case "$STEP" in
     ;;
   leads)
     yc storage bucket get --name yustika-leads >/dev/null 2>&1 || yc storage bucket create --name yustika-leads --default-storage-class standard
-    yc storage bucket update --name yustika-leads \
-      --lifecycle-rules '[{"id":"delete-after-1-year","enabled":true,"expiration":{"days":365}}]' >/dev/null && echo "Заявки хранятся 1 год" || echo "lifecycle: не удалось"
+    aws s3api put-bucket-lifecycle-configuration --endpoint-url=https://storage.yandexcloud.net --bucket yustika-leads \
+      --lifecycle-configuration '{"Rules":[{"ID":"delete-after-1-year","Status":"Enabled","Filter":{"Prefix":""},"Expiration":{"Days":365}}]}' \
+      && echo "Заявки хранятся 1 год, потом удаляются автоматически" || echo "lifecycle: не удалось"
     SA_ID=$(yc iam service-account get --name github-deploy --format json | jq -r .id)
     yc serverless function get --name leads >/dev/null 2>&1 || yc serverless function create --name leads >/dev/null
     curl -sSL -o infra/leads/ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
@@ -109,7 +110,7 @@ case "$STEP" in
       --environment LEADS_BUCKET=yustika-leads --environment MAIL_FROM=zayavki@yustika.ru --environment MAIL_TO=info@yustika.ru \
       --environment MAX_USER_ID=84181430 --environment "MAX_BOT_TOKEN=$MAX_BOT_TOKEN" \
       --environment NODE_EXTRA_CA_CERTS=/function/code/ru-ca.pem >/dev/null && echo "Версия функции создана"
-    yc serverless function allow-unauthenticated-invoke --name leads >/dev/null && echo "Функция открыта для вызова с сайта"
+    yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     ;;
   lead-test)
@@ -141,8 +142,9 @@ esac
     ;;
   leads)
     yc storage bucket get --name yustika-leads >/dev/null 2>&1 || yc storage bucket create --name yustika-leads --default-storage-class standard
-    yc storage bucket update --name yustika-leads \
-      --lifecycle-rules '[{"id":"delete-after-1-year","enabled":true,"expiration":{"days":365}}]' >/dev/null && echo "Заявки хранятся 1 год" || echo "lifecycle: не удалось"
+    aws s3api put-bucket-lifecycle-configuration --endpoint-url=https://storage.yandexcloud.net --bucket yustika-leads \
+      --lifecycle-configuration '{"Rules":[{"ID":"delete-after-1-year","Status":"Enabled","Filter":{"Prefix":""},"Expiration":{"Days":365}}]}' \
+      && echo "Заявки хранятся 1 год, потом удаляются автоматически" || echo "lifecycle: не удалось"
     SA_ID=$(yc iam service-account get --name github-deploy --format json | jq -r .id)
     yc serverless function get --name leads >/dev/null 2>&1 || yc serverless function create --name leads >/dev/null
     curl -sSL -o infra/leads/ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
@@ -151,7 +153,7 @@ esac
       --environment LEADS_BUCKET=yustika-leads --environment MAIL_FROM=zayavki@yustika.ru --environment MAIL_TO=info@yustika.ru \
       --environment MAX_USER_ID=84181430 --environment "MAX_BOT_TOKEN=$MAX_BOT_TOKEN" \
       --environment NODE_EXTRA_CA_CERTS=/function/code/ru-ca.pem >/dev/null && echo "Версия функции создана"
-    yc serverless function allow-unauthenticated-invoke --name leads >/dev/null && echo "Функция открыта для вызова с сайта"
+    yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     ;;
   lead-test)
