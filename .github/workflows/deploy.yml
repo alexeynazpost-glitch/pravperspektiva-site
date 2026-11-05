@@ -36,7 +36,7 @@ jobs:
         run: npm run build
         env:
           PUBLIC_NOINDEX: ${{ vars.PUBLIC_NOINDEX || '1' }}
-          PUBLIC_LEAD_ENDPOINT: ${{ vars.PUBLIC_LEAD_ENDPOINT }}
+          PUBLIC_LEAD_ENDPOINT: https://functions.yandexcloud.net/d4ehc8m7k6vrjm4vg4js
           PUBLIC_YM_ID: ${{ vars.PUBLIC_YM_ID }}
 
       - name: Выкладка в Object Storage

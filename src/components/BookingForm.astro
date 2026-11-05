@@ -39,7 +39,8 @@ import { site } from '../data/site';
       <textarea id="bk-about" name="about" rows="3"></textarea>
     </label>
     <label class="consent"><input type="checkbox" name="consent" /><span>Даю <a href="/soglasie/" target="_blank">согласие на обработку персональных данных</a> и принимаю <a href="/politika/" target="_blank">политику конфиденциальности</a>. Данные хранятся на серверах в России.</span></label>
-    <button type="submit" class="btn btn--accent" style="align-self:flex-start">Записаться</button>
+    <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px" />
+  <button type="submit" class="btn btn--accent" style="align-self:flex-start">Записаться</button>
     <p class="form-msg" role="status" hidden></p>
   </form>
 </section>

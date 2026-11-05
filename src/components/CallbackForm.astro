@@ -14,6 +14,7 @@ const H = tag;
     <select id={idp + '-when'} name="when"><option>Как можно скорее</option><option>Утром</option><option>Днём</option><option>Вечером</option></select>
   </label>
   <label class="consent"><input type="checkbox" name="consent" /><span>Даю <a href="/soglasie/" target="_blank">согласие на обработку персональных данных</a></span></label>
+  <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px" />
   <button type="submit" class="btn btn--petrol" style="margin-top:auto">Перезвоните мне</button>
   <p class="form-msg" role="status" hidden></p>
 </form>
