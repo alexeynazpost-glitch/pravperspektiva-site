@@ -29,14 +29,14 @@ import { site } from '../data/site';
     <input type="hidden" name="time" />
     <div class="grid" style="--min:240px;--gap:16px">
       <label class="field" for="bk-contact">Телефон или ник в MAX / Telegram
-        <input id="bk-contact" type="text" name="contact" placeholder="+7 ... или @ник" autocomplete="tel" />
+        <input class="ym-hide-content ym-disable-keys" id="bk-contact" type="text" name="contact" placeholder="+7 ... или @ник" autocomplete="tel" />
       </label>
       <label class="field" for="bk-name">Как к вам обращаться <span class="opt-l">(необязательно)</span>
-        <input id="bk-name" type="text" name="name" autocomplete="given-name" />
+        <input class="ym-hide-content ym-disable-keys" id="bk-name" type="text" name="name" autocomplete="given-name" />
       </label>
     </div>
     <label class="field" for="bk-about">Коротко о ситуации <span class="opt-l">(необязательно)</span>
-      <textarea id="bk-about" name="about" rows="3"></textarea>
+      <textarea class="ym-hide-content ym-disable-keys" id="bk-about" name="about" rows="3"></textarea>
     </label>
     <label class="consent"><input type="checkbox" name="consent" /><span>Даю <a href="/soglasie/" target="_blank">согласие на обработку персональных данных</a> и принимаю <a href="/politika/" target="_blank">политику конфиденциальности</a>. Данные хранятся на серверах в России.</span></label>
     <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px" />

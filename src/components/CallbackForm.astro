@@ -8,10 +8,10 @@ const H = tag;
   <H style="font-size:21px;margin:0">{title}</H>
   <p class="small">Оставьте номер — перезвоним в удобное время с номера {site.phone}.</p>
   <label class="field" for={idp + '-phone'}>Ваш телефон
-    <input id={idp + '-phone'} type="tel" name="contact" placeholder="+7" autocomplete="tel" inputmode="tel" />
+    <input class="ym-hide-content ym-disable-keys" id={idp + '-phone'} type="tel" name="contact" placeholder="+7" autocomplete="tel" inputmode="tel" />
   </label>
   <label class="field" for={idp + '-when'}>Когда удобно
-    <select id={idp + '-when'} name="when"><option>Как можно скорее</option><option>Утром</option><option>Днём</option><option>Вечером</option></select>
+    <select class="ym-hide-content ym-disable-keys" id={idp + '-when'} name="when"><option>Как можно скорее</option><option>Утром</option><option>Днём</option><option>Вечером</option></select>
   </label>
   <label class="consent"><input type="checkbox" name="consent" /><span>Даю <a href="/soglasie/" target="_blank">согласие на обработку персональных данных</a></span></label>
   <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px" />

@@ -110,7 +110,7 @@ if (faq.length) {
     <a href="/kontakty/#srazu" class="btn btn--accent">Написать</a>
   </div>
   <div class="cookie" id="cookie" hidden role="region" aria-label="Уведомление о cookie">
-    <p>Сайт использует cookie и сервис Яндекс Метрика, чтобы понимать, какие страницы полезны. Данные хранятся в России. Подробнее — в <a href="/politika/">политике конфиденциальности</a>.</p>
+    <p>Сайт использует cookie и Яндекс Метрику, в том числе Вебвизор — запись действий на сайте без содержимого форм, чтобы понимать, какие страницы полезны. Данные хранятся в России. Подробнее — в <a href="/politika/">политике конфиденциальности</a>.</p>
     <button type="button" class="btn btn--petrol btn--sm" id="cookie-ok">Понятно</button>
   </div>
   <script is:inline>
@@ -169,7 +169,7 @@ if (faq.length) {
   {ymId && (
     <script is:inline define:vars={{ ymId }}>
       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-      ym(Number(ymId),'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:false});
+      ym(Number(ymId),'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
       window.__ymId = Number(ymId);
     </script>
   )}
