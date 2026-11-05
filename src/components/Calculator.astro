@@ -69,7 +69,7 @@ const qs = [
       set('priceLabel', (mfcLikely || mfcMaybe) ? 'Если понадобится суд, наши услуги' : 'Наши услуги');
       set('priceTitle', hard ? 'обычно 150 000–170 000 ₽' : fmt(base));
       set('priceNote', hard ? 'В вашей ситуации есть особенности — точную сумму назовём после бесплатного разбора.' : 'или ' + fmt(base / 10) + ' в месяц при рассрочке на 10 месяцев');
-      if (window.ym && window.__ymId) try { ym(window.__ymId, 'reachGoal', 'calc_done'); } catch (e) {}
+      window.ppGoal && window.ppGoal('calc_done');
     }
     root.querySelectorAll('fieldset[data-key]').forEach(function (fs) {
       fs.addEventListener('click', function (e) {
