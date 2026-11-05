@@ -16,6 +16,9 @@ case "$STEP" in
     fi
     yc storage bucket update --name "$BUCKET" --public-read \
       --website-settings '{"index":"index.html","error":"404.html"}'
+    if ! yc storage bucket get --name yustika-backup >/dev/null 2>&1; then
+      yc storage bucket create --name yustika-backup --default-storage-class cold
+    fi
     yc storage bucket get --name "$BUCKET" --format json | jq -c '{name, anonymous_access_flags, default_storage_class}'
     ;;
 esac
