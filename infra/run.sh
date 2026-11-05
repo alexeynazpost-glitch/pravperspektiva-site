@@ -113,12 +113,15 @@ case "$STEP" in
     yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     ;;
+  fn-logs)
+    yc serverless function logs leads --since "$(date -u -d '30 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | tail -15 | cut -c1-300 || true
+    ;;
   lead-test)
     URL="https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     curl -sS -X POST "$URL" -H 'Origin: https://yustika.ru' -H 'Content-Type: application/json' \
       -d '{"form":"callback","contact":"ТЕСТ — проверка приёма заявок","when":"Как можно скорее","page":"/test/"}' -w "\nHTTP %{http_code}\n"
-    sleep 3
-    yc serverless function logs --name leads --since 5m 2>/dev/null | tail -5 | cut -c1-200
+    sleep 5
+    yc serverless function logs leads --since "$(date -u -d '10 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | grep -i "partial\|error\|lead" | tail -8 | cut -c1-300 || true
     ;;
 esac
     ;;
@@ -156,11 +159,14 @@ esac
     yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     ;;
+  fn-logs)
+    yc serverless function logs leads --since "$(date -u -d '30 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | tail -15 | cut -c1-300 || true
+    ;;
   lead-test)
     URL="https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     curl -sS -X POST "$URL" -H 'Origin: https://yustika.ru' -H 'Content-Type: application/json' \
       -d '{"form":"callback","contact":"ТЕСТ — проверка приёма заявок","when":"Как можно скорее","page":"/test/"}' -w "\nHTTP %{http_code}\n"
-    sleep 3
-    yc serverless function logs --name leads --since 5m 2>/dev/null | tail -5 | cut -c1-200
+    sleep 5
+    yc serverless function logs leads --since "$(date -u -d '10 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | grep -i "partial\|error\|lead" | tail -8 | cut -c1-300 || true
     ;;
 esac
