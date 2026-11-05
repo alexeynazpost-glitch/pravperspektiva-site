@@ -113,6 +113,12 @@ case "$STEP" in
     yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     ;;
+  site-check)
+    for u in http://yustika.ru/ https://yustika.ru/ http://www.yustika.ru/ https://www.yustika.ru/kontakty/; do
+      echo "-- $u"; curl -sS -o /dev/null -D - --max-redirs 0 "$u" | grep -i "^HTTP\|^location" || true
+    done
+    echo "-- Сертификат:"; echo | openssl s_client -connect yustika.ru:443 -servername yustika.ru 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+    ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
     ;;
@@ -161,6 +167,12 @@ esac
       --environment NODE_EXTRA_CA_CERTS=/function/code/ru-ca.pem >/dev/null && echo "Версия функции создана"
     yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
+    ;;
+  site-check)
+    for u in http://yustika.ru/ https://yustika.ru/ http://www.yustika.ru/ https://www.yustika.ru/kontakty/; do
+      echo "-- $u"; curl -sS -o /dev/null -D - --max-redirs 0 "$u" | grep -i "^HTTP\|^location" || true
+    done
+    echo "-- Сертификат:"; echo | openssl s_client -connect yustika.ru:443 -servername yustika.ru 2>/dev/null | openssl x509 -noout -subject -issuer -dates
     ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
