@@ -6,8 +6,8 @@ import Faq from '../components/Faq.astro';
 import Cases from '../components/Cases.astro';
 import PathsLinks from '../components/PathsLinks.astro';
 import ContactOptions from '../components/ContactOptions.astro';
-interface Props { title: string; description: string; crumb: string; h1: string; lead: string; faq?: { q: string; a: string }[]; cases?: number[] }
-const { title, description, crumb, h1, lead, faq = [], cases = [] } = Astro.props;
+interface Props { title: string; description: string; crumb: string; h1: string; lead: string; faq?: { q: string; a: string }[]; cases?: number[]; price?: string; priceTag?: string }
+const { title, description, crumb, h1, lead, faq = [], cases = [], priceTag, price = 'Стоимость зависит от объёма работы — назовём её после бесплатного разбора и зафиксируем в договоре.' } = Astro.props;
 ---
 <Base title={title} description={description} crumbs={[{ href: '/#uslugi', label: 'Услуги' }, { label: crumb }]} faq={faq}>
   <Hero
@@ -15,7 +15,8 @@ const { title, description, crumb, h1, lead, faq = [], cases = [] } = Astro.prop
     lead={lead}
     buttons={[{ href: '/kontakty/#zapis', label: 'Записаться на бесплатный разбор', kind: 'accent' }, { href: '#svyaz', label: 'Задать вопрос анонимно', kind: 'outline' }]}
     asideLabel="Стоимость"
-    asideText="Стоимость зависит от объёма работы — назовём её после бесплатного разбора и зафиксируем в договоре."
+    asidePrice={priceTag}
+    asideText={price}
   />
   <slot />
   {cases.length > 0 && <Cases ids={cases} bg="white" />}
