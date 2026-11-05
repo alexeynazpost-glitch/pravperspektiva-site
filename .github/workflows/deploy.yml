@@ -37,7 +37,7 @@ jobs:
         env:
           PUBLIC_NOINDEX: ${{ vars.PUBLIC_NOINDEX || '1' }}
           PUBLIC_LEAD_ENDPOINT: https://functions.yandexcloud.net/d4ehc8m7k6vrjm4vg4js
-          PUBLIC_YM_ID: ${{ vars.PUBLIC_YM_ID }}
+          PUBLIC_YM_ID: "114090065"
 
       - name: Выкладка в Object Storage
         if: env.HAS_KEYS == 'true'
