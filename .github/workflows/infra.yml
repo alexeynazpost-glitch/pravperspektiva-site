@@ -1,0 +1,32 @@
+# Настройка Яндекс Облака по шагам (запускается вручную).
+name: Настройка Облака
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: 'Шаг: check, bucket'
+        required: true
+        default: check
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Установить yc
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i "$HOME/yc" -n
+          echo "$HOME/yc/bin" >> "$GITHUB_PATH"
+      - name: Войти сервисным аккаунтом
+        env:
+          SA_KEY: ${{ secrets.YC_SA_KEY_JSON }}
+        run: |
+          printf '%s' "$SA_KEY" > key.json
+          yc config profile create deploy >/dev/null
+          yc config set service-account-key key.json
+          rm key.json
+          FOLDER=$(yc resource-manager folder list --format json | jq -r '.[0].id')
+          yc config set folder-id "$FOLDER"
+      - name: Выполнить шаг
+        run: bash infra/run.sh "${{ inputs.step }}"
