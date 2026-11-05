@@ -110,7 +110,7 @@ if (faq.length) {
     <a href="/kontakty/#srazu" class="btn btn--accent">Написать</a>
   </div>
   <div class="cookie" id="cookie" hidden role="region" aria-label="Уведомление о cookie">
-    <p>Сайт использует cookie и сервис Яндекс Метрика, чтобы понимать, какие страницы полезны. Данные хранятся в России. Подробнее — в <a href="/politika/">политике конфиденциальности</a>.</p>
+    <p>Сайт использует cookie и Яндекс Метрику, в том числе Вебвизор — запись действий на сайте без содержимого форм, чтобы понимать, какие страницы полезны. Данные хранятся в России. Подробнее — в <a href="/politika/">политике конфиденциальности</a>.</p>
     <button type="button" class="btn btn--petrol btn--sm" id="cookie-ok">Понятно</button>
   </div>
   <script is:inline>
@@ -146,16 +146,31 @@ if (faq.length) {
         var btn = form.querySelector('button[type=submit]');
         btn.disabled = true;
         fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-          .then(function (r) { if (!r.ok) throw new Error(); show('ok', form.dataset.ok || 'Спасибо, заявка принята.'); form.reset(); })
+          .then(function (r) { if (!r.ok) throw new Error(); show('ok', form.dataset.ok || 'Спасибо, заявка принята.'); form.reset(); window.ppGoal && window.ppGoal('lead_' + form.dataset.lead); window.ppGoal && window.ppGoal('lead_any'); })
           .catch(function () { show('err', 'Не получилось отправить. Позвоните или напишите нам: ' + phone + '.'); })
           .finally(function () { btn.disabled = false; });
       });
     });
   </script>
+  <script is:inline>
+    // Цели Яндекс Метрики: звонок, мессенджеры, заявки, калькулятор
+    window.ppGoal = function (n) { try { if (window.ym && window.__ymId) ym(window.__ymId, 'reachGoal', n); } catch (e) {} };
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a) return;
+      var h = a.getAttribute('href') || '';
+      if (h.indexOf('tel:') === 0) window.ppGoal('click_phone');
+      else if (h.indexOf('max.ru') > -1) window.ppGoal('click_max');
+      else if (h.indexOf('t.me/') > -1) window.ppGoal('click_telegram');
+      else if (h.indexOf('vk.') > -1) window.ppGoal('click_vk');
+      if (/max\.ru|t\.me\/|vk\./.test(h)) window.ppGoal('click_messenger');
+    });
+  </script>
   {ymId && (
     <script is:inline define:vars={{ ymId }}>
       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-      ym(Number(ymId),'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:false});
+      ym(Number(ymId),'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+      window.__ymId = Number(ymId);
     </script>
   )}
 </body>
