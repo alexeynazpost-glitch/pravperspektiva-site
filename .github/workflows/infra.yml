@@ -9,6 +9,11 @@ on:
         required: true
         default: check
 
+env:
+  # Не секреты: идентификаторы облака и каталога
+  YC_CLOUD_ID: b1gkcnj2ai241vvj5pb0
+  YC_FOLDER_ID: b1grgu978ckarj17arma
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -24,9 +29,9 @@ jobs:
         run: |
           printf '%s' "$SA_KEY" > key.json
           yc config profile create deploy >/dev/null
-          yc config set service-account-key key.json
+          yc config set service-account-key key.json >/dev/null
           rm key.json
-          FOLDER=$(yc resource-manager folder list --format json | jq -r '.[0].id')
-          yc config set folder-id "$FOLDER"
+          yc config set cloud-id "$YC_CLOUD_ID" >/dev/null
+          yc config set folder-id "$YC_FOLDER_ID" >/dev/null
       - name: Выполнить шаг
         run: bash infra/run.sh "${{ inputs.step }}"
