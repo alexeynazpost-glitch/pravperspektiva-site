@@ -1,7 +1,7 @@
 # Сборка сайта и выкладка в Яндекс Облако (Object Storage).
 # Ключи доступа хранятся только в GitHub → Settings → Secrets and variables → Actions:
 #   YC_ACCESS_KEY_ID, YC_SECRET_ACCESS_KEY — статический ключ сервисного аккаунта
-# Бакет сайта: yustika.ru (публичное чтение), резервные копии кода: yustika-ru-backup-b1grgu (закрытый).
+# Бакет сайта: yustika.ru (публичное чтение), резервные копии кода: yustika-backup (закрытый).
 # Переменные (Variables): PUBLIC_NOINDEX (1 — сайт закрыт от поисковиков, 0 — открыт),
 #   PUBLIC_LEAD_ENDPOINT — адрес приёма заявок, PUBLIC_YM_ID — номер счётчика Метрики.
 name: Сборка и выкладка
@@ -62,5 +62,5 @@ jobs:
           AWS_DEFAULT_REGION: ru-central1
         run: |
           git bundle create site.bundle --all
-          aws s3 cp site.bundle "s3://yustika-ru-backup-b1grgu/pravperspektiva-site-$(date +%Y%m%d-%H%M%S).bundle" \
+          aws s3 cp site.bundle "s3://yustika-backup/pravperspektiva-site-$(date +%Y%m%d-%H%M%S).bundle" \
             --endpoint-url=https://storage.yandexcloud.net
