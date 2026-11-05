@@ -51,4 +51,34 @@ case "$STEP" in
       --record "mail._domainkey.yustika.ru. 3600 TXT \"$DKIM\""
     yc dns zone list-records --name "$ZONE" | cut -c1-160
     ;;
+  dns-check)
+    for t in MX TXT ANAME; do echo "-- $t @ (Cloud DNS)"; dig +short "$t" yustika.ru @ns1.yandexcloud.net | cut -c1-80; done
+    echo "-- A @ (Cloud DNS)"; dig +short A yustika.ru @ns1.yandexcloud.net
+    echo "-- DKIM (Cloud DNS)"; dig +short TXT mail._domainkey.yustika.ru @ns1.yandexcloud.net | cut -c1-60
+    echo "-- NS у реестра .ru"; dig +short NS yustika.ru @a.dns.ripn.net
+    echo "-- Сайт через бакет:"; curl -sS -o /dev/null -w "%{http_code}\n" http://yustika.ru.website.yandexcloud.net/
+    ;;
+  cert)
+    NAME=yustika-ru
+    if ! yc certificate-manager certificate get --name "$NAME" >/dev/null 2>&1; then
+      yc certificate-manager certificate request --name "$NAME" --domains yustika.ru,www.yustika.ru --challenge dns
+    fi
+    yc certificate-manager certificate get --name "$NAME" --full --format json > cert.json
+    jq -c '{status, domains}' cert.json
+    jq -r '.challenges[] | select(.dns_challenge) | "\(.dns_challenge.name) \(.dns_challenge.type) \(.dns_challenge.value)"' cert.json | while read -r n t v; do
+      echo "challenge: $n $t $v"
+      if [ "$t" = TXT ]; then v="\"$v\""; fi
+      yc dns zone add-records --name yustika-ru --record "$n 600 $t $v" || true
+    done
+    rm cert.json
+    ;;
+  https)
+    CERT=$(yc certificate-manager certificate get --name yustika-ru --format json | jq -r '.id + " " + .status')
+    echo "Сертификат: $CERT"
+    case "$CERT" in *ISSUED*)
+      for b in yustika.ru www.yustika.ru; do
+        yc storage bucket set-https --name "$b" --certificate-id "${CERT%% *}" && echo "HTTPS включён для $b"
+      done;;
+    *) echo "Сертификат ещё не выпущен — повторите позже";; esac
+    ;;
 esac
