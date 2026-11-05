@@ -65,7 +65,7 @@ case "$STEP" in
     fi
     yc certificate-manager certificate get --name "$NAME" --full --format json > cert.json
     jq -c '{status, domains}' cert.json
-    jq -r '.challenges[] | select(.dns_challenge) | "\(.dns_challenge.name) \(.dns_challenge.type) \(.dns_challenge.value)"' cert.json | while read -r n t v; do
+    jq -r '.challenges[] | select(.dns_challenge and .dns_challenge.type == "CNAME") | "\(.dns_challenge.name) \(.dns_challenge.type) \(.dns_challenge.value)"' cert.json | while read -r n t v; do
       echo "challenge: $n $t $v"
       if [ "$t" = TXT ]; then v="\"$v\""; fi
       yc dns zone add-records --name yustika-ru --record "$n 600 $t $v" || true
