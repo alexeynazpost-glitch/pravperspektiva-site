@@ -79,6 +79,86 @@ case "$STEP" in
       for b in yustika.ru www.yustika.ru; do
         yc storage bucket set-https --name "$b" --certificate-id "${CERT%% *}" && echo "HTTPS включён для $b"
       done;;
-    *) echo "Сертификат ещё не выпущен — повторите позже";; esac
+    *) echo "Сертификат ещё не выпущен — повторите позже";;   postbox)
+    TOKEN=$(yc iam create-token)
+    if curl -sSf -o /dev/null https://postbox.cloud.yandex.net/v2/email/identities/yustika.ru -H "X-YaCloud-SubjectToken: $TOKEN"; then
+      echo "Адрес yustika.ru в Postbox уже есть"
+    else
+      openssl genrsa -out pb.pem 1024 2>/dev/null
+      PRIV=$(grep -v '^-----' pb.pem | tr -d '\n')
+      PUB=$(openssl rsa -in pb.pem -pubout 2>/dev/null | grep -v '^-----' | tr -d '\n')
+      rm -f pb.pem
+      jq -n --arg k "$PRIV" '{EmailIdentity:"yustika.ru", DkimSigningAttributes:{DomainSigningSelector:"postbox", DomainSigningPrivateKey:$k}}' > req.json
+      unset PRIV
+      curl -sS -X POST https://postbox.cloud.yandex.net/v2/email/identities \
+        -H "X-YaCloud-SubjectToken: $TOKEN" -H 'Content-Type: application/json' --data @req.json | jq -c '{IdentityType, VerifiedForSendingStatus, Dkim: .DkimAttributes.Status, Error: .message}'
+      rm -f req.json
+      yc dns zone add-records --name yustika-ru --record "postbox._domainkey.yustika.ru. 3600 TXT \"v=DKIM1; k=rsa; p=$PUB\""
+    fi
+    curl -sS https://postbox.cloud.yandex.net/v2/email/identities/yustika.ru -H "X-YaCloud-SubjectToken: $TOKEN" | jq -c '{VerifiedForSendingStatus, Dkim: .DkimAttributes.Status}'
+    ;;
+  leads)
+    yc storage bucket get --name yustika-leads >/dev/null 2>&1 || yc storage bucket create --name yustika-leads --default-storage-class standard
+    yc storage bucket update --name yustika-leads \
+      --lifecycle-rules '[{"id":"delete-after-1-year","enabled":true,"expiration":{"days":365}}]' >/dev/null && echo "Заявки хранятся 1 год" || echo "lifecycle: не удалось"
+    SA_ID=$(yc iam service-account get --name github-deploy --format json | jq -r .id)
+    yc serverless function get --name leads >/dev/null 2>&1 || yc serverless function create --name leads >/dev/null
+    curl -sSL -o infra/leads/ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
+    yc serverless function version create --function-name leads --runtime nodejs22 --entrypoint index.handler \
+      --memory 128m --execution-timeout 15s --source-path infra/leads --service-account-id "$SA_ID" \
+      --environment LEADS_BUCKET=yustika-leads --environment MAIL_FROM=zayavki@yustika.ru --environment MAIL_TO=info@yustika.ru \
+      --environment MAX_USER_ID=84181430 --environment "MAX_BOT_TOKEN=$MAX_BOT_TOKEN" \
+      --environment NODE_EXTRA_CA_CERTS=/function/code/ru-ca.pem >/dev/null && echo "Версия функции создана"
+    yc serverless function allow-unauthenticated-invoke --name leads >/dev/null && echo "Функция открыта для вызова с сайта"
+    echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
+    ;;
+  lead-test)
+    URL="https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
+    curl -sS -X POST "$URL" -H 'Origin: https://yustika.ru' -H 'Content-Type: application/json' \
+      -d '{"form":"callback","contact":"ТЕСТ — проверка приёма заявок","when":"Как можно скорее","page":"/test/"}' -w "\nHTTP %{http_code}\n"
+    sleep 3
+    yc serverless function logs --name leads --since 5m 2>/dev/null | tail -5 | cut -c1-200
+    ;;
+esac
+    ;;
+  postbox)
+    TOKEN=$(yc iam create-token)
+    if curl -sSf -o /dev/null https://postbox.cloud.yandex.net/v2/email/identities/yustika.ru -H "X-YaCloud-SubjectToken: $TOKEN"; then
+      echo "Адрес yustika.ru в Postbox уже есть"
+    else
+      openssl genrsa -out pb.pem 1024 2>/dev/null
+      PRIV=$(grep -v '^-----' pb.pem | tr -d '\n')
+      PUB=$(openssl rsa -in pb.pem -pubout 2>/dev/null | grep -v '^-----' | tr -d '\n')
+      rm -f pb.pem
+      jq -n --arg k "$PRIV" '{EmailIdentity:"yustika.ru", DkimSigningAttributes:{DomainSigningSelector:"postbox", DomainSigningPrivateKey:$k}}' > req.json
+      unset PRIV
+      curl -sS -X POST https://postbox.cloud.yandex.net/v2/email/identities \
+        -H "X-YaCloud-SubjectToken: $TOKEN" -H 'Content-Type: application/json' --data @req.json | jq -c '{IdentityType, VerifiedForSendingStatus, Dkim: .DkimAttributes.Status, Error: .message}'
+      rm -f req.json
+      yc dns zone add-records --name yustika-ru --record "postbox._domainkey.yustika.ru. 3600 TXT \"v=DKIM1; k=rsa; p=$PUB\""
+    fi
+    curl -sS https://postbox.cloud.yandex.net/v2/email/identities/yustika.ru -H "X-YaCloud-SubjectToken: $TOKEN" | jq -c '{VerifiedForSendingStatus, Dkim: .DkimAttributes.Status}'
+    ;;
+  leads)
+    yc storage bucket get --name yustika-leads >/dev/null 2>&1 || yc storage bucket create --name yustika-leads --default-storage-class standard
+    yc storage bucket update --name yustika-leads \
+      --lifecycle-rules '[{"id":"delete-after-1-year","enabled":true,"expiration":{"days":365}}]' >/dev/null && echo "Заявки хранятся 1 год" || echo "lifecycle: не удалось"
+    SA_ID=$(yc iam service-account get --name github-deploy --format json | jq -r .id)
+    yc serverless function get --name leads >/dev/null 2>&1 || yc serverless function create --name leads >/dev/null
+    curl -sSL -o infra/leads/ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
+    yc serverless function version create --function-name leads --runtime nodejs22 --entrypoint index.handler \
+      --memory 128m --execution-timeout 15s --source-path infra/leads --service-account-id "$SA_ID" \
+      --environment LEADS_BUCKET=yustika-leads --environment MAIL_FROM=zayavki@yustika.ru --environment MAIL_TO=info@yustika.ru \
+      --environment MAX_USER_ID=84181430 --environment "MAX_BOT_TOKEN=$MAX_BOT_TOKEN" \
+      --environment NODE_EXTRA_CA_CERTS=/function/code/ru-ca.pem >/dev/null && echo "Версия функции создана"
+    yc serverless function allow-unauthenticated-invoke --name leads >/dev/null && echo "Функция открыта для вызова с сайта"
+    echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
+    ;;
+  lead-test)
+    URL="https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
+    curl -sS -X POST "$URL" -H 'Origin: https://yustika.ru' -H 'Content-Type: application/json' \
+      -d '{"form":"callback","contact":"ТЕСТ — проверка приёма заявок","when":"Как можно скорее","page":"/test/"}' -w "\nHTTP %{http_code}\n"
+    sleep 3
+    yc serverless function logs --name leads --since 5m 2>/dev/null | tail -5 | cut -c1-200
     ;;
 esac

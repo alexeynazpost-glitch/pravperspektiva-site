@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       step:
-        description: 'Шаг: check, bucket'
+        description: 'Шаг: check, bucket, dns, dns-check, cert, https, postbox, leads, lead-test'
         required: true
         default: check
 
@@ -34,4 +34,6 @@ jobs:
           yc config set cloud-id "$YC_CLOUD_ID" >/dev/null
           yc config set folder-id "$YC_FOLDER_ID" >/dev/null
       - name: Выполнить шаг
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
         run: bash infra/run.sh "${{ inputs.step }}"
