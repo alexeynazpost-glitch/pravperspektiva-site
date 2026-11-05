@@ -113,6 +113,9 @@ case "$STEP" in
     yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
     ;;
+  leads-ls)
+    aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
+    ;;
   fn-logs)
     yc serverless function logs leads --since "$(date -u -d '30 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | tail -15 | cut -c1-300 || true
     ;;
@@ -158,6 +161,9 @@ esac
       --environment NODE_EXTRA_CA_CERTS=/function/code/ru-ca.pem >/dev/null && echo "Версия функции создана"
     yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
     echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
+    ;;
+  leads-ls)
+    aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
     ;;
   fn-logs)
     yc serverless function logs leads --since "$(date -u -d '30 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | tail -15 | cut -c1-300 || true
