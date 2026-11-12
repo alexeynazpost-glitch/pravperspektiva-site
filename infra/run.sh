@@ -119,6 +119,13 @@ case "$STEP" in
     done
     echo "-- Сертификат:"; echo | openssl s_client -connect yustika.ru:443 -servername yustika.ru 2>/dev/null | openssl x509 -noout -subject -issuer -dates
     ;;
+  live-check)
+    echo "-- robots.txt"; curl -sS https://yustika.ru/robots.txt
+    echo "-- sitemap: страниц"; curl -sS https://yustika.ru/sitemap-0.xml | grep -o "<loc>" | wc -l
+    echo "-- noindex на главной:"; curl -sS https://yustika.ru/ | grep -o '<meta name="robots"[^>]*>' || echo "нет (индексация открыта)"
+    echo "-- реквизиты:"; curl -sS https://yustika.ru/politika/ | grep -o "Оператор персональных данных[^<]*\|Редакция от[^<]*" | head -3
+    echo "-- метрика:"; curl -sS https://yustika.ru/ | grep -o "mc.yandex.ru/watch/[0-9]*" | head -1
+    ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
     ;;
@@ -173,6 +180,13 @@ esac
       echo "-- $u"; curl -sS -o /dev/null -D - --max-redirs 0 "$u" | grep -i "^HTTP\|^location" || true
     done
     echo "-- Сертификат:"; echo | openssl s_client -connect yustika.ru:443 -servername yustika.ru 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+    ;;
+  live-check)
+    echo "-- robots.txt"; curl -sS https://yustika.ru/robots.txt
+    echo "-- sitemap: страниц"; curl -sS https://yustika.ru/sitemap-0.xml | grep -o "<loc>" | wc -l
+    echo "-- noindex на главной:"; curl -sS https://yustika.ru/ | grep -o '<meta name="robots"[^>]*>' || echo "нет (индексация открыта)"
+    echo "-- реквизиты:"; curl -sS https://yustika.ru/politika/ | grep -o "Оператор персональных данных[^<]*\|Редакция от[^<]*" | head -3
+    echo "-- метрика:"; curl -sS https://yustika.ru/ | grep -o "mc.yandex.ru/watch/[0-9]*" | head -1
     ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
