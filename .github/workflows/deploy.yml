@@ -35,7 +35,7 @@ jobs:
       - name: Сборка
         run: npm run build
         env:
-          PUBLIC_NOINDEX: ${{ vars.PUBLIC_NOINDEX || '1' }}
+          PUBLIC_NOINDEX: ${{ vars.PUBLIC_NOINDEX || '0' }}
           PUBLIC_LEAD_ENDPOINT: https://functions.yandexcloud.net/d4ehc8m7k6vrjm4vg4js
           PUBLIC_YM_ID: "114090065"
 

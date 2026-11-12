@@ -13,10 +13,11 @@ interface Props {
   faq?: FaqItem[];
   type?: 'website' | 'article';
   schema?: Record<string, unknown>[];
+  hide?: boolean; // закрыть страницу от индексации (например, пустая рубрика блога)
 }
-const { title, description, crumbs = [], faq = [], type = 'website', schema = [] } = Astro.props;
+const { title, description, crumbs = [], faq = [], type = 'website', schema = [], hide = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
-const noindex = import.meta.env.PUBLIC_NOINDEX !== '0';
+const noindex = import.meta.env.PUBLIC_NOINDEX !== '0' || hide;
 const ymId = import.meta.env.PUBLIC_YM_ID;
 const strip = (h: string) => h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 

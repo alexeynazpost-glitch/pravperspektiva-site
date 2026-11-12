@@ -6,6 +6,7 @@ import { getCollection } from 'astro:content';
 const posts = (await getCollection('blog', (p) => !p.data.draft)).sort((a, b) => +b.data.date - +a.data.date);
 ---
 <Base
+  hide={posts.length === 0}
   title="Блог о банкротстве физических лиц — простыми словами | Юстика"
   description="Статьи о банкротстве физических лиц: как проходит процедура, что будет с имуществом, какие долги списываются и как жить после банкротства."
   crumbs={[{ label: 'Блог' }]}
