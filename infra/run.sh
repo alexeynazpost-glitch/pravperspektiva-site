@@ -164,6 +164,16 @@ case "$STEP" in
       yc storage bucket update --name "$b" --website-settings '{"redirect_all_requests":{"protocol":"PROTOCOL_HTTPS","hostname":"fedeta.ru"}}' >/dev/null && echo "Перенаправление включено: $b → fedeta.ru"
     done
     ;;
+  nd-rf)
+    # федета.рф → https://fedeta.ru (перенаправление всех адресов)
+    D=xn--80ahcb9di.xn--p1ai; Z=fedeta-rf
+    for b in $D www.$D; do yc storage bucket get --name "$b" >/dev/null 2>&1 || yc storage bucket create --name "$b" --public-read >/dev/null; \
+      yc storage bucket update --name "$b" --public-read --website-settings '{"redirect_all_requests":{"protocol":"PROTOCOL_HTTPS","hostname":"fedeta.ru"}}' >/dev/null; done
+    yc dns zone get --name $Z >/dev/null 2>&1 || yc dns zone create --name $Z --zone $D. --public-visibility >/dev/null
+    yc dns zone add-records --name $Z --record "$D. 600 ANAME $D.website.yandexcloud.net." --record "www.$D. 600 CNAME www.$D.website.yandexcloud.net." >/dev/null 2>&1 || true
+    yc dns zone list-records --name $Z | cut -c1-150
+    echo "-- NS у реестра .рф"; dig +short NS $D @a.dns.ripn.net
+    ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
     ;;
