@@ -1,9 +1,9 @@
-// Приём заявок с сайта yustika.ru (Yandex Cloud Functions, Node.js).
+// Приём заявок с сайта (fedeta.ru, ранее yustika.ru) (Yandex Cloud Functions, Node.js).
 // 1) проверяет заявку, 2) сохраняет в закрытый бакет (серверы в РФ),
 // 3) присылает письмо на почту и сообщение в MAX.
 // Секреты приходят через переменные окружения функции, в коде их нет.
 
-const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://yustika.ru,https://www.yustika.ru').split(',');
+const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://fedeta.ru,https://www.fedeta.ru,https://yustika.ru,https://www.yustika.ru').split(',');
 const FORMS = { callback: 'Обратный звонок', booking: 'Запись на разбор' };
 const FIELDS = { contact: 'Контакт', name: 'Имя', when: 'Когда удобно', format: 'Формат', day: 'День', time: 'Время', about: 'О ситуации' };
 
@@ -87,7 +87,7 @@ module.exports.handler = async (event, context) => {
   const title = `${FORMS[lead.form] || 'Заявка'}: ${lead.contact}`;
   const lines = Object.entries(FIELDS).filter(([k]) => lead[k]).map(([k, l]) => `${l}: ${lead[k]}`);
   const time = new Date(lead.receivedAt).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
-  const text = [`Новая заявка с сайта yustika.ru`, `Тип: ${FORMS[lead.form] || 'другое'}`, ...lines, `Страница: ${lead.page || '—'}`, `Время: ${time} (МСК)`].join('\n');
+  const text = [`Новая заявка с сайта`, `Тип: ${FORMS[lead.form] || 'другое'}`, ...lines, `Страница: ${lead.page || '—'}`, `Время: ${time} (МСК)`].join('\n');
 
   const token = context && context.token && context.token.access_token;
   const results = await Promise.allSettled([
