@@ -148,7 +148,7 @@ case "$STEP" in
     ;;
   nd-check)
     D=fedeta.ru
-    echo "-- NS у реестра .ru"; dig +short NS $D @a.dns.ripn.net
+    echo "-- NS у реестра .ru"; dig NS $D @a.dns.ripn.net +noall +authority; echo "-- NS (8.8.8.8)"; dig +short NS $D @8.8.8.8; echo "-- федета.рф"; dig NS xn--80ahcb9di.xn--p1ai @a.dns.ripn.net +noall +authority; whois $D 2>/dev/null | grep -i "state\|nserver\|created" || true
     echo "-- Сертификат:"; yc certificate-manager certificate get --name fedeta-ru --format json | jq -c '{status}'
     echo "-- Бакет:"; curl -sS -o /dev/null -w "%{http_code}\n" http://$D.website.yandexcloud.net/
     for u in http://$D/ https://$D/ https://www.$D/ https://yustika.ru/ceny/; do echo "-- $u"; curl -sS -o /dev/null -D - --max-redirs 0 "$u" 2>&1 | grep -i "^HTTP\|^location\|curl" || true; done
