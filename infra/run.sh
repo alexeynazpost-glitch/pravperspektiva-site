@@ -126,6 +126,41 @@ case "$STEP" in
     echo "-- реквизиты:"; curl -sS https://yustika.ru/politika/ | grep -o "Оператор персональных данных[^<]*\|Редакция от[^<]*" | head -3
     echo "-- метрика:"; curl -sS https://yustika.ru/ | grep -o "mc.yandex.ru/watch/[0-9]*" | head -1
     ;;
+  # ===== Новый домен fedeta.ru (переезд с yustika.ru) =====
+  nd-setup)
+    D=fedeta.ru; Z=fedeta-ru
+    for b in $D www.$D; do yc storage bucket get --name "$b" >/dev/null 2>&1 || yc storage bucket create --name "$b" --default-storage-class standard --public-read; done
+    yc storage bucket update --name $D --public-read --website-settings '{"index":"index.html","error":"404.html"}' >/dev/null
+    yc storage bucket update --name www.$D --public-read --website-settings "{\"redirect_all_requests\":{\"protocol\":\"PROTOCOL_HTTPS\",\"hostname\":\"$D\"}}" >/dev/null
+    yc dns zone get --name $Z >/dev/null 2>&1 || yc dns zone create --name $Z --zone $D. --public-visibility >/dev/null
+    yc dns zone add-records --name $Z --record "$D. 600 ANAME $D.website.yandexcloud.net." --record "www.$D. 600 CNAME www.$D.website.yandexcloud.net." >/dev/null 2>&1 || true
+    yc certificate-manager certificate get --name $Z >/dev/null 2>&1 || yc certificate-manager certificate request --name $Z --domains $D,www.$D --challenge dns >/dev/null
+    yc certificate-manager certificate get --name $Z --full --format json > cert.json
+    jq -r '.challenges[] | select(.dns_challenge and .dns_challenge.type == "CNAME") | "\(.dns_challenge.name) \(.dns_challenge.value)"' cert.json | while read -r n v; do
+      yc dns zone add-records --name $Z --record "$n 600 CNAME $v" >/dev/null 2>&1 || true; done
+    rm cert.json
+    echo "== Записи зоны:"; yc dns zone list-records --name $Z | cut -c1-150
+    echo "== Сертификат:"; yc certificate-manager certificate get --name $Z --format json | jq -c '{status, domains}'
+    echo "== NS для Рег.ру: ns1.yandexcloud.net, ns2.yandexcloud.net"
+    ;;
+  nd-check)
+    D=fedeta.ru
+    echo "-- NS у реестра .ru"; dig +short NS $D @a.dns.ripn.net
+    echo "-- Сертификат:"; yc certificate-manager certificate get --name fedeta-ru --format json | jq -c '{status}'
+    echo "-- Бакет:"; curl -sS -o /dev/null -w "%{http_code}\n" http://$D.website.yandexcloud.net/
+    for u in http://$D/ https://$D/ https://www.$D/ https://yustika.ru/ceny/; do echo "-- $u"; curl -sS -o /dev/null -D - --max-redirs 0 "$u" 2>&1 | grep -i "^HTTP\|^location\|curl" || true; done
+    ;;
+  nd-https)
+    CERT=$(yc certificate-manager certificate get --name fedeta-ru --format json | jq -r '.id + " " + .status'); echo "Сертификат: $CERT"
+    case "$CERT" in *ISSUED*) for b in fedeta.ru www.fedeta.ru; do yc storage bucket set-https --name "$b" --certificate-id "${CERT%% *}" >/dev/null && echo "HTTPS включён для $b"; done;;
+    *) echo "Сертификат ещё не выпущен — повторите позже";; esac
+    ;;
+  nd-redirect)
+    # Старый домен: все страницы yustika.ru → те же адреса на fedeta.ru (301)
+    for b in yustika.ru www.yustika.ru; do
+      yc storage bucket update --name "$b" --website-settings '{"redirect_all_requests":{"protocol":"PROTOCOL_HTTPS","hostname":"fedeta.ru"}}' >/dev/null && echo "Перенаправление включено: $b → fedeta.ru"
+    done
+    ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
     ;;
