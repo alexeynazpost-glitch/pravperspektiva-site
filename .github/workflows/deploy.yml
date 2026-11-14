@@ -1,7 +1,7 @@
 # Сборка сайта и выкладка в Яндекс Облако (Object Storage).
 # Ключи доступа хранятся только в GitHub → Settings → Secrets and variables → Actions:
 #   YC_ACCESS_KEY_ID, YC_SECRET_ACCESS_KEY — статический ключ сервисного аккаунта
-# Бакет сайта: yustika.ru (публичное чтение), резервные копии кода: yustika-backup (закрытый).
+# Бакет сайта: fedeta.ru (публичное чтение), резервные копии кода: yustika-backup (закрытый).
 # Переменные (Variables): PUBLIC_NOINDEX (1 — сайт закрыт от поисковиков, 0 — открыт),
 #   PUBLIC_LEAD_ENDPOINT — адрес приёма заявок, PUBLIC_YM_ID — номер счётчика Метрики.
 name: Сборка и выкладка
@@ -46,10 +46,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ru-central1
         run: |
-          aws s3 sync dist/ "s3://yustika.ru/" \
+          aws s3 sync dist/ "s3://fedeta.ru/" \
             --endpoint-url=https://storage.yandexcloud.net --delete \
             --exclude "*.html" --cache-control "public,max-age=604800"
-          aws s3 sync dist/ "s3://yustika.ru/" \
+          aws s3 sync dist/ "s3://fedeta.ru/" \
             --endpoint-url=https://storage.yandexcloud.net --delete \
             --exclude "*" --include "*.html" --cache-control "public,max-age=300" \
             --content-type "text/html; charset=utf-8"

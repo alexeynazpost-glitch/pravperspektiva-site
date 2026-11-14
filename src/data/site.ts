@@ -3,7 +3,7 @@
 export const site = {
   name: 'Федета',
   tagline: 'Банкротство физлиц и ИП',
-  url: 'https://yustika.ru',
+  url: 'https://fedeta.ru',
   expert: 'Алексей Назаркин',
   expertRole: 'Руководитель «Федеты», 10 лет в банкротстве физлиц',
   phone: '+7 (995) 157-89-88',

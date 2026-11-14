@@ -40,4 +40,4 @@ jobs:
           fi
           echo "== Ваш ID в MAX: $ID"
           c -X POST "$API/messages?user_id=$ID" -H "Content-Type: application/json" \
-            -d '{"text":"✅ Юстика: проверка связи. Сюда будут приходить заявки с сайта yustika.ru."}' | jq -c '{sent: (.message != null), error: .message?.code?}'
+            -d '{"text":"✅ Федета: проверка связи. Сюда будут приходить заявки с сайта yustika.ru."}' | jq -c '{sent: (.message != null), error: .message?.code?}'
