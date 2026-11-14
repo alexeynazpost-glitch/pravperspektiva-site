@@ -79,7 +79,10 @@ case "$STEP" in
       for b in yustika.ru www.yustika.ru; do
         yc storage bucket set-https --name "$b" --certificate-id "${CERT%% *}" && echo "HTTPS включён для $b"
       done;;
-    *) echo "Сертификат ещё не выпущен — повторите позже";;   postbox)
+    *) echo "Сертификат ещё не выпущен — повторите позже";;
+    esac
+    ;;
+  postbox)
     TOKEN=$(yc iam create-token)
     if curl -sSf -o /dev/null https://postbox.cloud.yandex.net/v2/email/identities/yustika.ru -H "X-YaCloud-SubjectToken: $TOKEN"; then
       echo "Адрес yustika.ru в Postbox уже есть"
@@ -160,68 +163,6 @@ case "$STEP" in
     for b in yustika.ru www.yustika.ru; do
       yc storage bucket update --name "$b" --website-settings '{"redirect_all_requests":{"protocol":"PROTOCOL_HTTPS","hostname":"fedeta.ru"}}' >/dev/null && echo "Перенаправление включено: $b → fedeta.ru"
     done
-    ;;
-  leads-ls)
-    aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
-    ;;
-  fn-logs)
-    yc serverless function logs leads --since "$(date -u -d '30 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | tail -15 | cut -c1-300 || true
-    ;;
-  lead-test)
-    URL="https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
-    curl -sS -X POST "$URL" -H 'Origin: https://yustika.ru' -H 'Content-Type: application/json' \
-      -d '{"form":"callback","contact":"ТЕСТ — проверка приёма заявок","when":"Как можно скорее","page":"/test/"}' -w "\nHTTP %{http_code}\n"
-    sleep 5
-    yc serverless function logs leads --since "$(date -u -d '10 minutes ago' +%Y-%m-%dT%H:%M:%SZ)" 2>&1 | grep -i "partial\|error\|lead" | tail -8 | cut -c1-300 || true
-    ;;
-esac
-    ;;
-  postbox)
-    TOKEN=$(yc iam create-token)
-    if curl -sSf -o /dev/null https://postbox.cloud.yandex.net/v2/email/identities/yustika.ru -H "X-YaCloud-SubjectToken: $TOKEN"; then
-      echo "Адрес yustika.ru в Postbox уже есть"
-    else
-      openssl genrsa -out pb.pem 1024 2>/dev/null
-      PRIV=$(grep -v '^-----' pb.pem | tr -d '\n')
-      PUB=$(openssl rsa -in pb.pem -pubout 2>/dev/null | grep -v '^-----' | tr -d '\n')
-      rm -f pb.pem
-      jq -n --arg k "$PRIV" '{EmailIdentity:"yustika.ru", DkimSigningAttributes:{DomainSigningSelector:"postbox", DomainSigningPrivateKey:$k}}' > req.json
-      unset PRIV
-      curl -sS -X POST https://postbox.cloud.yandex.net/v2/email/identities \
-        -H "X-YaCloud-SubjectToken: $TOKEN" -H 'Content-Type: application/json' --data @req.json | jq -c '{IdentityType, VerifiedForSendingStatus, Dkim: .DkimAttributes.Status, Error: .message}'
-      rm -f req.json
-      yc dns zone add-records --name yustika-ru --record "postbox._domainkey.yustika.ru. 3600 TXT \"v=DKIM1; k=rsa; p=$PUB\""
-    fi
-    curl -sS https://postbox.cloud.yandex.net/v2/email/identities/yustika.ru -H "X-YaCloud-SubjectToken: $TOKEN" | jq -c '{VerifiedForSendingStatus, Dkim: .DkimAttributes.Status}'
-    ;;
-  leads)
-    yc storage bucket get --name yustika-leads >/dev/null 2>&1 || yc storage bucket create --name yustika-leads --default-storage-class standard
-    aws s3api put-bucket-lifecycle-configuration --endpoint-url=https://storage.yandexcloud.net --bucket yustika-leads \
-      --lifecycle-configuration '{"Rules":[{"ID":"delete-after-1-year","Status":"Enabled","Filter":{"Prefix":""},"Expiration":{"Days":365}}]}' \
-      && echo "Заявки хранятся 1 год, потом удаляются автоматически" || echo "lifecycle: не удалось"
-    SA_ID=$(yc iam service-account get --name github-deploy --format json | jq -r .id)
-    yc serverless function get --name leads >/dev/null 2>&1 || yc serverless function create --name leads >/dev/null
-    curl -sSL -o infra/leads/ru-ca.pem https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
-    yc serverless function version create --function-name leads --runtime nodejs22 --entrypoint index.handler \
-      --memory 128m --execution-timeout 15s --source-path infra/leads --service-account-id "$SA_ID" \
-      --environment LEADS_BUCKET=yustika-leads --environment MAIL_FROM=zayavki@yustika.ru --environment MAIL_TO=info@yustika.ru \
-      --environment MAX_USER_ID=84181430 --environment "MAX_BOT_TOKEN=$MAX_BOT_TOKEN" \
-      --environment NODE_EXTRA_CA_CERTS=/function/code/ru-ca.pem >/dev/null && echo "Версия функции создана"
-    yc serverless function allow-unauthenticated-invoke --name leads >/dev/null 2>&1 && echo "Функция открыта для вызова с сайта" || echo "Нужно вручную сделать функцию публичной (нужны права администратора)"
-    echo "Адрес: https://functions.yandexcloud.net/$(yc serverless function get --name leads --format json | jq -r .id)"
-    ;;
-  site-check)
-    for u in http://yustika.ru/ https://yustika.ru/ http://www.yustika.ru/ https://www.yustika.ru/kontakty/; do
-      echo "-- $u"; curl -sS -o /dev/null -D - --max-redirs 0 "$u" | grep -i "^HTTP\|^location" || true
-    done
-    echo "-- Сертификат:"; echo | openssl s_client -connect yustika.ru:443 -servername yustika.ru 2>/dev/null | openssl x509 -noout -subject -issuer -dates
-    ;;
-  live-check)
-    echo "-- robots.txt"; curl -sS https://yustika.ru/robots.txt
-    echo "-- sitemap: страниц"; curl -sS https://yustika.ru/sitemap-0.xml | grep -o "<loc>" | wc -l
-    echo "-- noindex на главной:"; curl -sS https://yustika.ru/ | grep -o '<meta name="robots"[^>]*>' || echo "нет (индексация открыта)"
-    echo "-- реквизиты:"; curl -sS https://yustika.ru/politika/ | grep -o "Оператор персональных данных[^<]*\|Редакция от[^<]*" | head -3
-    echo "-- метрика:"; curl -sS https://yustika.ru/ | grep -o "mc.yandex.ru/watch/[0-9]*" | head -1
     ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
