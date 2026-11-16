@@ -25,7 +25,7 @@ const keep = (p) => {
 const noindex = process.env.PUBLIC_NOINDEX !== '0';
 
 export default defineConfig({
-  site: 'https://yustika.ru',
+  site: 'https://fedeta.ru',
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'always' },
   integrations: noindex ? [] : [sitemap({ filter: keep })],
