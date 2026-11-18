@@ -175,6 +175,10 @@ case "$STEP" in
     yc dns zone list-records --name $Z | cut -c1-150
     echo "-- NS у реестра .рф"; dig +short NS $D @a.dns.ripn.net
     ;;
+  nd-verify)
+    yc dns zone add-records --name fedeta-ru --record 'fedeta.ru. 600 TXT "yandex-verification: e49f8cdfca37aa58"' >/dev/null 2>&1 || true
+    sleep 20; echo "-- TXT fedeta.ru"; dig +short TXT fedeta.ru @ns1.yandexcloud.net
+    ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
     ;;
