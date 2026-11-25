@@ -180,6 +180,18 @@ case "$STEP" in
     yc dns zone add-records --name fedeta-ru --record 'fedeta.ru. 600 TXT "yandex-verification: e49f8cdfca37aa58"' >/dev/null 2>&1 || true
     sleep 20; echo "-- TXT fedeta.ru"; dig +short TXT fedeta.ru @ns1.yandexcloud.net
     ;;
+  ym-test)
+    mkdir -p /tmp/ymt && cd /tmp/ymt && npm init -y >/dev/null && npm i playwright@1.49.1 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+    cat > t.js <<'JS'
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage();
+p.on('request',r=>{if(/mc\.yandex/.test(r.url()))console.log('REQ',r.url().slice(0,160))});
+p.on('response',r=>{if(/mc\.yandex/.test(r.url()))console.log('RES',r.status(),r.url().slice(0,90))});
+p.on('pageerror',e=>console.log('PAGEERR',e.message));
+await p.goto('https://fedeta.ru/?utm_source=test',{waitUntil:'load'});await p.waitForTimeout(8000);
+console.log('ym:',await p.evaluate(()=>typeof window.ym+' id='+window.__ymId));await b.close()})();
+JS
+    node t.js
+    ;;
   leads-ls)
     aws s3 ls --endpoint-url=https://storage.yandexcloud.net s3://yustika-leads/leads/ --recursive | tail -5 | awk '{print $1, $2, $3, "bytes"}'
     ;;
