@@ -123,11 +123,12 @@ case "$STEP" in
     echo "-- Сертификат:"; echo | openssl s_client -connect yustika.ru:443 -servername yustika.ru 2>/dev/null | openssl x509 -noout -subject -issuer -dates
     ;;
   live-check)
-    echo "-- robots.txt"; curl -sS https://yustika.ru/robots.txt
-    echo "-- sitemap: страниц"; curl -sS https://yustika.ru/sitemap-0.xml | grep -o "<loc>" | wc -l
-    echo "-- noindex на главной:"; curl -sS https://yustika.ru/ | grep -o '<meta name="robots"[^>]*>' || echo "нет (индексация открыта)"
-    echo "-- реквизиты:"; curl -sS https://yustika.ru/politika/ | grep -o "Оператор персональных данных[^<]*\|Редакция от[^<]*" | head -3
-    echo "-- метрика:"; curl -sS https://yustika.ru/ | grep -o "mc.yandex.ru/watch/[0-9]*" | head -1
+    echo "-- robots.txt"; curl -sS https://fedeta.ru/robots.txt
+    echo "-- sitemap: страниц"; curl -sS https://fedeta.ru/sitemap-0.xml | grep -o "<loc>" | wc -l
+    echo "-- noindex на главной:"; curl -sS https://fedeta.ru/ | grep -o '<meta name="robots"[^>]*>' || echo "нет (индексация открыта)"
+    echo "-- реквизиты:"; curl -sS https://fedeta.ru/politika/ | grep -o "Оператор персональных данных[^<]*\|Редакция от[^<]*" | head -3
+    echo "-- метрика:"; curl -sS https://fedeta.ru/ | grep -o "mc.yandex.ru/[a-z/.]*[0-9]*\|ym(Number([^)]*)\|ymId[^,;]*\|webvisor:[a-z]*" | sort -u
+    echo "-- tag.js доступен:"; curl -sS -o /dev/null -w "%{http_code}\n" https://mc.yandex.ru/metrika/tag.js
     ;;
   # ===== Новый домен fedeta.ru (переезд с yustika.ru) =====
   nd-setup)
